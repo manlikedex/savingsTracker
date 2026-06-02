@@ -12,6 +12,9 @@ import {
   WalletCards,
   Plus,
   Bell,
+  Building2,
+  Sparkles,
+  Trash2,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -63,8 +66,22 @@ const starterPartners: Partner[] = [
 ];
 
 const starterProperties: Property[] = [];
-
 const starterPlannerItems: PlannerItem[] = [];
+
+const cardClass =
+  "rounded-[2rem] border border-pink-200/20 bg-white/[0.10] shadow-2xl shadow-rose-950/30 backdrop-blur-2xl";
+
+const innerCardClass =
+  "rounded-3xl border border-pink-200/15 bg-white/[0.07] shadow-xl shadow-rose-950/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.11]";
+
+const inputClass =
+  "rounded-2xl border border-pink-200/15 bg-rose-950/55 px-4 py-2.5 text-sm text-white outline-none ring-pink-300/30 placeholder:text-pink-100/45 focus:ring-4";
+
+const primaryButtonClass =
+  "inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-200 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-black text-rose-950 shadow-[0_0_25px_rgba(244,114,182,0.35)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_40px_rgba(244,114,182,0.55)]";
+
+const softButtonClass =
+  "rounded-2xl border border-pink-200/20 bg-white/[0.08] px-5 py-2.5 text-sm font-bold text-pink-50 shadow-lg shadow-rose-950/20 transition-all duration-300 hover:scale-[1.03] hover:bg-white/[0.14]";
 
 function formatGBP(value: number) {
   return new Intl.NumberFormat("en-GB", {
@@ -78,17 +95,35 @@ function ProgressBar({ value }: { value: number }) {
   return (
     <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
       <div
-        className="h-3 rounded-full bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 shadow-[0_0_18px_rgba(52,211,153,0.45)] transition-all"
+        className="h-3 rounded-full bg-gradient-to-r from-pink-200 via-rose-300 to-red-300 shadow-[0_0_22px_rgba(251,113,133,0.55)] transition-all duration-500"
         style={{ width: `${Math.min(value, 100)}%` }}
       />
     </div>
   );
 }
 
+function statusClass(status: string) {
+  switch (status) {
+    case "Interested":
+      return "border-pink-300/30 bg-pink-300/15 text-pink-100";
+    case "Viewing Booked":
+      return "border-purple-300/30 bg-purple-300/15 text-purple-100";
+    case "Applied":
+      return "border-emerald-300/30 bg-emerald-300/15 text-emerald-100";
+    case "Rejected":
+      return "border-red-300/30 bg-red-300/15 text-red-100";
+    case "No Longer Interested":
+      return "border-slate-300/20 bg-slate-300/10 text-slate-200";
+    default:
+      return "border-rose-300/30 bg-rose-300/15 text-rose-100";
+  }
+}
+
 export default function HomePage() {
   const [activeUser, setActiveUser] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);
-  const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>(starterSavingsGoals);
+  const [savingsGoals, setSavingsGoals] =
+    useState<SavingsGoal[]>(starterSavingsGoals);
   const [partners, setPartners] = useState<Partner[]>(starterPartners);
   const [properties, setProperties] = useState<Property[]>(starterProperties);
   const [jointMonthlyTarget, setJointMonthlyTarget] = useState(0);
@@ -108,7 +143,9 @@ export default function HomePage() {
   const [propertyDeposit, setPropertyDeposit] = useState("");
   const [propertyLink, setPropertyLink] = useState("");
   const [propertyImageUrl, setPropertyImageUrl] = useState("");
-  const [editingTargets, setEditingTargets] = useState<Record<string, string>>({});
+  const [editingTargets, setEditingTargets] = useState<Record<string, string>>(
+    {}
+  );
   const [plannerItemName, setPlannerItemName] = useState("");
   const [plannerItemCategory, setPlannerItemCategory] = useState("Furniture");
   const [plannerItemEstimate, setPlannerItemEstimate] = useState("");
@@ -118,6 +155,7 @@ export default function HomePage() {
     const savedUser = localStorage.getItem("activeUser");
     const savedJointMonthlyTarget = localStorage.getItem("jointMonthlyTarget");
     const savedPushEnabled = localStorage.getItem("pushEnabled");
+    const savedPlannerItems = localStorage.getItem("plannerItems");
 
     if (savedUser) {
       setActiveUser(savedUser);
@@ -136,8 +174,6 @@ export default function HomePage() {
     if (savedPushEnabled === "true") {
       setPushEnabled(true);
     }
-
-    const savedPlannerItems = localStorage.getItem("plannerItems");
 
     if (savedPlannerItems) {
       setPlannerItems(JSON.parse(savedPlannerItems));
@@ -201,7 +237,9 @@ export default function HomePage() {
       .order("created_at", { ascending: false });
 
     if (savingsError || partnerError || propertyError) {
-      setMessage("Could not load Supabase data. Check your tables and .env.local file.");
+      setMessage(
+        "Could not load Supabase data. Check your tables and .env.local file."
+      );
       setIsLoading(false);
       return;
     }
@@ -230,14 +268,29 @@ export default function HomePage() {
   }
 
   const totals = useMemo(() => {
-    const totalTarget = savingsGoals.reduce((sum, goal) => sum + Number(goal.target), 0);
-    const totalSaved = savingsGoals.reduce((sum, goal) => sum + Number(goal.saved), 0);
-    const progress = totalTarget > 0 ? Math.round((totalSaved / totalTarget) * 100) : 0;
+    const totalTarget = savingsGoals.reduce(
+      (sum, goal) => sum + Number(goal.target),
+      0
+    );
+    const totalSaved = savingsGoals.reduce(
+      (sum, goal) => sum + Number(goal.saved),
+      0
+    );
+    const progress =
+      totalTarget > 0 ? Math.round((totalSaved / totalTarget) * 100) : 0;
     const remaining = Math.max(totalTarget - totalSaved, 0);
-    const monthsToGoal = jointMonthlyTarget > 0 && remaining > 0 ? Math.ceil(remaining / jointMonthlyTarget) : 0;
+    const monthsToGoal =
+      jointMonthlyTarget > 0 && remaining > 0
+        ? Math.ceil(remaining / jointMonthlyTarget)
+        : 0;
 
     return { totalTarget, totalSaved, progress, remaining, monthsToGoal };
   }, [savingsGoals, jointMonthlyTarget]);
+
+  const partnerTotal = partners.reduce(
+    (sum, partner) => sum + Number(partner.saved),
+    0
+  );
 
   function saveJointMonthlyTarget() {
     const target = Number(jointMonthlyTargetInput);
@@ -261,8 +314,12 @@ export default function HomePage() {
       return;
     }
 
-    const selectedGoal = savingsGoals.find((goal) => goal.name === contributionGoal);
-    const selectedPartner = partners.find((partner) => partner.name === contributionName);
+    const selectedGoal = savingsGoals.find(
+      (goal) => goal.name === contributionGoal
+    );
+    const selectedPartner = partners.find(
+      (partner) => partner.name === contributionName
+    );
 
     if (!selectedGoal || !selectedPartner) {
       setMessage("Could not find the selected person or savings pot.");
@@ -298,22 +355,38 @@ export default function HomePage() {
 
     setSavingsGoals((currentGoals) =>
       currentGoals.map((goal) =>
-        goal.name === contributionGoal ? { ...goal, saved: updatedGoalSaved } : goal
+        goal.name === contributionGoal
+          ? { ...goal, saved: updatedGoalSaved }
+          : goal
       )
     );
 
     setPartners((currentPartners) =>
       currentPartners.map((partner) =>
-        partner.name === contributionName ? { ...partner, saved: updatedPartnerSaved } : partner
+        partner.name === contributionName
+          ? { ...partner, saved: updatedPartnerSaved }
+          : partner
       )
     );
 
-    const previousTotalTarget = savingsGoals.reduce((sum, goal) => sum + Number(goal.target), 0);
-    const previousTotalSaved = savingsGoals.reduce((sum, goal) => sum + Number(goal.saved), 0);
+    const previousTotalTarget = savingsGoals.reduce(
+      (sum, goal) => sum + Number(goal.target),
+      0
+    );
+    const previousTotalSaved = savingsGoals.reduce(
+      (sum, goal) => sum + Number(goal.saved),
+      0
+    );
     const previousProgress =
-      previousTotalTarget > 0 ? Math.floor((previousTotalSaved / previousTotalTarget) * 100) : 0;
+      previousTotalTarget > 0
+        ? Math.floor((previousTotalSaved / previousTotalTarget) * 100)
+        : 0;
     const newProgress =
-      previousTotalTarget > 0 ? Math.floor(((previousTotalSaved + amount) / previousTotalTarget) * 100) : 0;
+      previousTotalTarget > 0
+        ? Math.floor(
+            ((previousTotalSaved + amount) / previousTotalTarget) * 100
+          )
+        : 0;
 
     setContributionAmount("");
     setMessage(`Added ${formatGBP(amount)} for ${contributionName}.`);
@@ -408,7 +481,10 @@ export default function HomePage() {
     setMessage("Planner item removed.");
   }
 
-  async function updatePropertyStatus(propertyId: string | undefined, status: string) {
+  async function updatePropertyStatus(
+    propertyId: string | undefined,
+    status: string
+  ) {
     if (!propertyId) return;
 
     const { error } = await supabase
@@ -433,7 +509,9 @@ export default function HomePage() {
   async function deleteProperty(propertyId: string | undefined) {
     if (!propertyId) return;
 
-    const propertyToDelete = properties.find((property) => property.id === propertyId);
+    const propertyToDelete = properties.find(
+      (property) => property.id === propertyId
+    );
 
     const { error } = await supabase
       .from("properties")
@@ -458,110 +536,112 @@ export default function HomePage() {
   }
 
   function urlBase64ToUint8Array(base64String: string) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
 
-  const rawData = window.atob(base64);
+    const rawData = window.atob(base64);
 
-  return Uint8Array.from(
-    [...rawData].map((char) => char.charCodeAt(0))
-  );
-}
-
-async function enablePushNotifications() {
-  if (!activeUser) {
-    setMessage("Choose Jordan or Dannie first.");
-    return;
+    return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
   }
 
-  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-    setMessage("Push notifications are not supported on this browser.");
-    return;
-  }
+  async function enablePushNotifications() {
+    if (!activeUser) {
+      setMessage("Choose Jordan or Dannie first.");
+      return;
+    }
 
-  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      setMessage("Push notifications are not supported on this browser.");
+      return;
+    }
 
-  if (!vapidPublicKey) {
-    setMessage("Missing NEXT_PUBLIC_VAPID_PUBLIC_KEY.");
-    return;
-  }
+    const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
-  const permission = await Notification.requestPermission();
+    if (!vapidPublicKey) {
+      setMessage("Missing NEXT_PUBLIC_VAPID_PUBLIC_KEY.");
+      return;
+    }
 
-  if (permission !== "granted") {
-    setMessage("Notifications were not enabled.");
-    return;
-  }
+    const permission = await Notification.requestPermission();
 
-  const registration = await navigator.serviceWorker.register("/sw.js");
+    if (permission !== "granted") {
+      setMessage("Notifications were not enabled.");
+      return;
+    }
 
-  const subscription =
-    (await registration.pushManager.getSubscription()) ||
-    (await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
-    }));
+    const registration = await navigator.serviceWorker.register("/sw.js");
 
-  const response = await fetch("/api/subscribe", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      userName: activeUser,
-      subscription,
-    }),
-  });
+    const subscription =
+      (await registration.pushManager.getSubscription()) ||
+      (await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+      }));
 
-if (!response.ok) {
-  const data = await response.json();
-  setMessage(`Could not save push subscription: ${data.error || "Unknown error"}`);
-  return;
-}
-
-  setPushEnabled(true);
-  localStorage.setItem("pushEnabled", "true");
-  setMessage("Push notifications enabled.");
-}
-
-async function sendNotification(title: string, body: string) {
-  try {
-    await fetch("/api/send-notification", {
+    const response = await fetch("/api/subscribe", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, body }),
+      body: JSON.stringify({
+        userName: activeUser,
+        subscription,
+      }),
     });
-  } catch {
-    // Keeps the main app action working even if notifications fail.
+
+    if (!response.ok) {
+      const data = await response.json();
+      setMessage(
+        `Could not save push subscription: ${data.error || "Unknown error"}`
+      );
+      return;
+    }
+
+    setPushEnabled(true);
+    localStorage.setItem("pushEnabled", "true");
+    setMessage("Push notifications enabled.");
   }
-}
 
-async function sendMotivation() {
-  const messages = [
-    "Small steps every week get you closer to your own place.",
-    "Keep going — every pound saved gets you closer to moving in.",
-    "You and Dannie are building something together. Stay consistent.",
-    "Future you will be glad you kept saving today.",
-    "Every update is progress. Keep the momentum going.",
-  ];
+  async function sendNotification(title: string, body: string) {
+    try {
+      await fetch("/api/send-notification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, body }),
+      });
+    } catch {
+      // Keep main app actions working even if notifications fail.
+    }
+  }
 
-  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+  async function sendMotivation() {
+    const messages = [
+      "Small steps every week get you closer to your own place.",
+      "Keep going — every pound saved gets you closer to moving in.",
+      "You and Dannie are building something together. Stay consistent.",
+      "Future you will be glad you kept saving today.",
+      "Every update is progress. Keep the momentum going.",
+      "Love, plans, and consistency — that is how the dream becomes real.",
+    ];
 
-  await sendNotification("Keep going 💪", randomMessage);
-}
+    const randomMessage =
+      messages[Math.floor(Math.random() * messages.length)];
 
-async function sendTestNotification() {
-  await sendNotification(
-    "Test notification",
-    "Notifications are working for your home savings tracker."
-  );
+    await sendNotification("Keep going 💪", randomMessage);
+  }
 
-  setMessage("Test notification sent.");
-}
+  async function sendTestNotification() {
+    await sendNotification(
+      "Test notification",
+      "Notifications are working for your home savings tracker."
+    );
+
+    setMessage("Test notification sent.");
+  }
 
   async function addProperty() {
     const rent = Number(propertyRent);
@@ -608,10 +688,7 @@ async function sendTestNotification() {
       return;
     }
 
-    setProperties((currentProperties) => [
-      data as Property,
-      ...currentProperties,
-    ]);
+    setProperties((currentProperties) => [data as Property, ...currentProperties]);
 
     setPropertyTitle("");
     setPropertyLocation("");
@@ -629,31 +706,41 @@ async function sendTestNotification() {
   }
 
   return (
-  <main className="min-h-screen overflow-hidden bg-rose-950 p-6 text-white">
-  <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(244,114,182,0.32),transparent_34%),radial-gradient(circle_at_top_right,rgba(251,113,133,0.28),transparent_30%),radial-gradient(circle_at_bottom,rgba(190,24,93,0.25),transparent_38%),linear-gradient(135deg,#4c0519_0%,#831843_45%,#be123c_100%)]" />
-  <div className="fixed left-1/2 top-0 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-pink-400/20 blur-3xl" />
+    <main className="min-h-screen overflow-hidden bg-[#2a0614] p-4 text-white sm:p-6">
+      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(251,113,133,0.45),transparent_30%),radial-gradient(circle_at_top_right,rgba(244,114,182,0.35),transparent_28%),radial-gradient(circle_at_bottom,rgba(190,24,93,0.38),transparent_42%),linear-gradient(135deg,#2a0614_0%,#5f1232_42%,#9f1239_100%)]" />
+      <div className="fixed left-1/2 top-0 -z-10 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-pink-300/20 blur-3xl" />
+      <div className="pointer-events-none fixed left-8 top-24 -z-10 text-8xl text-pink-200/10">
+        ❤
+      </div>
+      <div className="pointer-events-none fixed bottom-24 right-8 -z-10 text-9xl text-rose-200/10">
+        ❤
+      </div>
 
       {!activeUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-6 backdrop-blur-xl">
-          <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/[0.08] p-6 text-center shadow-2xl shadow-black/40 backdrop-blur-xl">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 text-rose-950">
-              <Heart size={26} />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-rose-950/80 p-6 backdrop-blur-2xl">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[2.25rem] border border-pink-200/20 bg-white/[0.11] p-7 text-center shadow-2xl shadow-rose-950/50 backdrop-blur-2xl">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-gradient-to-br from-pink-200 via-rose-300 to-red-300 text-rose-950 shadow-[0_0_35px_rgba(244,114,182,0.45)]">
+              <Heart size={30} fill="currentColor" />
             </div>
-            <h2 className="mt-5 text-2xl font-bold">Who’s using the tracker?</h2>
-            <p className="mt-2 text-sm text-slate-300">
-              Select your name so contributions are added under the right person.
+            <h2 className="mt-5 text-3xl font-black tracking-tight">
+              Who is checking in?
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-pink-50/70">
+              Choose who is using the tracker so savings and updates are added
+              under the right person.
             </p>
 
-            <div className="mt-6 grid gap-3">
+            <div className="mt-7 grid gap-3">
               <button
                 onClick={() => chooseUser("Jordan")}
-                className="rounded-2xl border border-cyan-300/20 bg-gradient-to-r from-cyan-400/20 to-emerald-400/20 px-5 py-4 text-base font-bold text-cyan-100 transition hover:scale-[1.02] hover:border-cyan-300/40"
+                className={primaryButtonClass}
               >
                 Jordan
               </button>
               <button
                 onClick={() => chooseUser("Dannie")}
-                className="rounded-2xl border border-emerald-300/20 bg-gradient-to-r from-emerald-400/20 to-lime-400/20 px-5 py-4 text-base font-bold text-emerald-100 transition hover:scale-[1.02] hover:border-emerald-300/40"
+                className="rounded-2xl border border-pink-200/25 bg-white/[0.10] px-5 py-3 text-sm font-black text-pink-50 shadow-lg shadow-rose-950/20 transition-all duration-300 hover:scale-[1.03] hover:bg-white/[0.16]"
               >
                 Dannie
               </button>
@@ -663,181 +750,206 @@ async function sendTestNotification() {
       )}
 
       {showWelcome && activeUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-slate-950/85 p-6 backdrop-blur-2xl">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(34,211,238,0.20),transparent_28%),radial-gradient(circle_at_bottom,rgba(16,185,129,0.18),transparent_32%)]" />
-          <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-3xl" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-rose-950/85 p-6 backdrop-blur-2xl">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,113,133,0.32),transparent_28%),radial-gradient(circle_at_bottom,rgba(244,114,182,0.25),transparent_35%)]" />
+          <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-300/20 blur-3xl" />
 
-          <div className="relative w-full max-w-lg overflow-hidden rounded-[2.25rem] border border-white/10 bg-white/[0.08] p-8 text-center shadow-2xl shadow-black/50 backdrop-blur-2xl">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-300 via-rose-300 to-red-300" />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-pink-200/20 bg-white/[0.11] p-8 text-center shadow-2xl shadow-rose-950/60 backdrop-blur-2xl">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
 
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-gradient-to-br from-cyan-300 via-emerald-300 to-lime-300 text-rose-950 shadow-2xl shadow-emerald-950/50">
-              <Heart size={36} fill="currentColor" />
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-pink-200 via-rose-300 to-red-300 text-rose-950 shadow-[0_0_45px_rgba(244,114,182,0.45)]">
+              <Heart size={42} fill="currentColor" />
             </div>
 
-            <p className="mt-7 text-sm font-semibold uppercase tracking-[0.35em] text-emerald-200">
+            <p className="mt-7 text-sm font-bold uppercase tracking-[0.35em] text-pink-100/80">
               Welcome back
             </p>
-            <h2 className="mt-3 bg-gradient-to-r from-cyan-200 via-white to-emerald-200 bg-clip-text text-5xl font-black tracking-tight text-transparent">
+            <h2 className="mt-3 bg-gradient-to-r from-pink-100 via-white to-rose-100 bg-clip-text text-6xl font-black tracking-tight text-transparent">
               {activeUser}
             </h2>
-            <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-slate-300">
-              Your Cornwall move-in savings tracker is ready. Contributions will be added under your name.
+            <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-pink-50/70">
+              Your shared Cornwall home savings journey is ready.
             </p>
 
-            <div className="mx-auto mt-7 h-2 w-40 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-pink-300 via-rose-300 to-red-300" />
+            <div className="mx-auto mt-7 h-2 w-44 overflow-hidden rounded-full bg-white/10">
+              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
             </div>
           </div>
         </div>
       )}
 
-      <div className="mx-auto max-w-7xl space-y-6">
-        <header className="rounded-[2rem] border border-pink-200/20 bg-white/[0.08] p-6 shadow-2xl shadow-black/30 backdrop-blur-xl md:p-8">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+      <div className="mx-auto max-w-7xl space-y-6 pb-24 md:pb-6">
+        <header className={`${cardClass} p-6 md:p-8`}>
+          <div className="flex flex-col justify-between gap-8 md:flex-row md:items-center">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-200">
-                <Heart size={16} /> Jordan & Dannie’s private savings tracker
+              <div className="inline-flex items-center gap-2 rounded-full border border-pink-200/25 bg-pink-200/10 px-4 py-2 text-sm font-bold text-pink-50">
+                <Heart size={16} fill="currentColor" /> Jordan & Dannie’s future home
               </div>
-              <h1 className="mt-5 max-w-3xl text-4xl font-bold tracking-tight md:text-5xl">
-                Cornwall move-in savings plan
+              <h1 className="mt-5 max-w-4xl bg-gradient-to-r from-pink-100 via-white to-rose-100 bg-clip-text text-4xl font-black tracking-tight text-transparent md:text-6xl">
+                Building Our First Home Together
               </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300">
-                Track your joint savings, rental options, furniture, appliances, and everything needed before moving into your first rented place together.
+              <p className="mt-4 max-w-2xl text-base leading-7 text-pink-50/70">
+                A shared place to track savings, Cornwall rentals, furniture,
+                appliances, and every little step towards moving in together.
               </p>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                onClick={switchUser}
-                className="rounded-2xl border border-pink-200/20 bg-white/[0.08] px-5 py-3 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition hover:scale-[1.02] hover:border-white/20"
-              >
-                Switch user
-              </button>
-              
-            </div>
+            <button onClick={switchUser} className={softButtonClass}>
+              Switch user
+            </button>
           </div>
         </header>
 
         {(isLoading || message) && (
-          <div className="rounded-2xl border border-pink-200/20 bg-white/[0.08] p-4 text-sm text-slate-200 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.10] p-4 text-sm font-medium text-pink-50 shadow-xl shadow-rose-950/20 backdrop-blur-xl">
             {isLoading ? "Loading your saved data..." : message}
           </div>
         )}
 
-        <section className="grid gap-4 md:grid-cols-4">
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
-            <div className="flex items-center gap-3 text-slate-300">
-              <PiggyBank className="text-emerald-300" />
-              <p className="font-medium">Saved so far</p>
+        <section id="overview" className="grid gap-4 md:grid-cols-4">
+          <div className={`${innerCardClass} p-5`}>
+            <div className="flex items-center gap-3 text-pink-50/75">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-300/15">
+                <PiggyBank className="text-pink-100" />
+              </div>
+              <p className="font-bold">Saved so far</p>
             </div>
-            <p className="mt-4 text-3xl font-bold">{formatGBP(totals.totalSaved)}</p>
+            <p className="mt-5 text-4xl font-black">{formatGBP(totals.totalSaved)}</p>
           </div>
 
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
-            <div className="flex items-center gap-3 text-slate-300">
-              <TrendingUp className="text-cyan-300" />
-              <p className="font-medium">Move-in target</p>
+          <div className={`${innerCardClass} p-5`}>
+            <div className="flex items-center gap-3 text-pink-50/75">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-300/15">
+                <TrendingUp className="text-rose-100" />
+              </div>
+              <p className="font-bold">Move-in target</p>
             </div>
-            <p className="mt-4 text-3xl font-bold">{formatGBP(totals.totalTarget)}</p>
+            <p className="mt-5 text-4xl font-black">{formatGBP(totals.totalTarget)}</p>
           </div>
 
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
-            <div className="flex items-center gap-3 text-slate-300">
-              <Home className="text-lime-300" />
-              <p className="font-medium">Remaining</p>
+          <div className={`${innerCardClass} p-5`}>
+            <div className="flex items-center gap-3 text-pink-50/75">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-300/15">
+                <Home className="text-red-100" />
+              </div>
+              <p className="font-bold">Remaining</p>
             </div>
-            <p className="mt-4 text-3xl font-bold">{formatGBP(totals.remaining)}</p>
+            <p className="mt-5 text-4xl font-black">{formatGBP(totals.remaining)}</p>
           </div>
 
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
-            <p className="font-medium text-slate-300">Overall progress</p>
-            <p className="mt-4 text-3xl font-bold">{totals.progress}%</p>
-            <div className="mt-3">
+          <div className={`${innerCardClass} p-5`}>
+            <p className="font-bold text-pink-50/75">Together progress</p>
+            <p className="mt-4 text-4xl font-black">{totals.progress}%</p>
+            <div className="mt-4">
               <ProgressBar value={totals.progress} />
             </div>
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl lg:col-span-2">
+        <section className="grid gap-4 md:grid-cols-3">
+          {partners.map((partner) => (
+            <div key={partner.name} className={`${innerCardClass} p-5`}>
+              <p className="text-sm font-bold text-pink-50/55">Saved by</p>
+              <div className="mt-2 flex items-center justify-between">
+                <h2 className="text-2xl font-black">{partner.name}</h2>
+                <Heart className="text-pink-200" fill="currentColor" />
+              </div>
+              <p className="mt-4 text-3xl font-black">
+                {formatGBP(Number(partner.saved))}
+              </p>
+            </div>
+          ))}
+
+          <div className={`${innerCardClass} p-5`}>
+            <p className="text-sm font-bold text-pink-50/55">Together</p>
+            <div className="mt-2 flex items-center justify-between">
+              <h2 className="text-2xl font-black">Joint total</h2>
+              <Sparkles className="text-rose-200" />
+            </div>
+            <p className="mt-4 text-3xl font-black">{formatGBP(partnerTotal)}</p>
+          </div>
+        </section>
+
+        <section id="monthly" className="grid gap-6 lg:grid-cols-3">
+          <div className={`${cardClass} p-6 lg:col-span-2`}>
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm text-slate-400">Joint monthly goal</p>
-                <h2 className="text-2xl font-bold">{formatGBP(jointMonthlyTarget)}</h2>
+                <p className="text-sm font-bold text-pink-50/55">
+                  Joint monthly goal
+                </p>
+                <h2 className="mt-2 text-4xl font-black">
+                  {formatGBP(jointMonthlyTarget)}
+                </h2>
               </div>
-              <WalletCards className="text-emerald-300" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-300/15">
+                <WalletCards className="text-pink-100" />
+              </div>
             </div>
 
-            <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto]">
+            <div className="mt-6 grid gap-3 sm:grid-cols-[1fr_auto]">
               <input
                 value={jointMonthlyTargetInput}
                 onChange={(event) => setJointMonthlyTargetInput(event.target.value)}
                 type="number"
                 min="0"
                 placeholder="Set joint monthly saving target"
-                className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                className={inputClass}
               />
-              <button
-                onClick={saveJointMonthlyTarget}
-                className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-5 py-3 text-sm font-bold text-emerald-100 transition hover:scale-[1.02] hover:border-emerald-300/40"
-              >
+              <button onClick={saveJointMonthlyTarget} className={primaryButtonClass}>
                 Save monthly target
               </button>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
-            <p className="text-sm text-slate-400">Estimated time left</p>
-            <h2 className="mt-2 text-3xl font-bold">
+          <div className={`${cardClass} p-6`}>
+            <p className="text-sm font-bold text-pink-50/55">Estimated time left</p>
+            <h2 className="mt-3 text-4xl font-black">
               {totals.monthsToGoal > 0 ? `${totals.monthsToGoal} months` : "Set target"}
             </h2>
-            <p className="mt-3 text-sm text-slate-400">
+            <p className="mt-3 text-sm leading-6 text-pink-50/60">
               Based on your joint monthly target and remaining amount.
             </p>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
-  <div className="flex items-center gap-3">
-    <Bell className="text-emerald-300" />
-    <h2 className="text-xl font-bold">Push Notifications</h2>
-  </div>
+        <section className={`${cardClass} p-6`}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-300/15">
+              <Bell className="text-pink-100" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black">Push Notifications</h2>
+              <p className="mt-1 text-sm text-pink-50/60">
+                Shared updates when savings, properties and planner items change.
+              </p>
+            </div>
+          </div>
 
-  <p className="mt-2 text-sm text-slate-400">
-    Enable reminders and shared updates when savings, properties, and planner items change.
-  </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            <button onClick={enablePushNotifications} className={primaryButtonClass}>
+              {pushEnabled ? "Notifications enabled" : "Enable notifications"}
+            </button>
 
-  <div className="mt-5 grid gap-3 sm:grid-cols-3">
-    <button
-      onClick={enablePushNotifications}
-      className="rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
-    >
-      {pushEnabled ? "Notifications enabled" : "Enable notifications"}
-    </button>
+            <button onClick={sendTestNotification} className={softButtonClass}>
+              Send test
+            </button>
 
-    <button
-      onClick={sendTestNotification}
-      className="rounded-2xl border border-pink-200/20 bg-white/[0.08] px-5 py-2.5 text-sm font-bold text-slate-200 transition hover:scale-[1.02] hover:border-white/20"
-    >
-      Send test
-    </button>
+            <button
+              onClick={sendMotivation}
+              className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-5 py-2.5 text-sm font-bold text-pink-50 transition-all duration-300 hover:scale-[1.03] hover:bg-pink-200/15"
+            >
+              Motivate us
+            </button>
+          </div>
+        </section>
 
-    <button
-      onClick={sendMotivation}
-      className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-5 py-2.5 text-sm font-bold text-emerald-100 transition hover:scale-[1.02] hover:border-emerald-300/40"
-    >
-      Motivate us
-    </button>
-  </div>
-</section>
-
-        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
-          <h2 className="text-xl font-bold">Add Savings Contribution</h2>
+        <section id="savings" className={`${cardClass} p-6`}>
+          <h2 className="text-xl font-black">Add Savings Contribution</h2>
           <div className="mt-5 grid gap-3 md:grid-cols-4">
             <select
               value={contributionName}
               onChange={(event) => setContributionName(event.target.value)}
-              className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm outline-none ring-emerald-300/30 focus:ring-4"
+              className={inputClass}
             >
               {partners.map((partner) => (
                 <option key={partner.name} value={partner.name}>
@@ -849,7 +961,7 @@ async function sendTestNotification() {
             <select
               value={contributionGoal}
               onChange={(event) => setContributionGoal(event.target.value)}
-              className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm outline-none ring-emerald-300/30 focus:ring-4"
+              className={inputClass}
             >
               {savingsGoals.map((goal) => (
                 <option key={goal.name} value={goal.name}>
@@ -864,36 +976,41 @@ async function sendTestNotification() {
               type="number"
               min="0"
               placeholder="Amount saved"
-              className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+              className={inputClass}
             />
 
-            <button
-              onClick={addContribution}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
-            >
+            <button onClick={addContribution} className={primaryButtonClass}>
               <Plus size={18} /> Add saving
             </button>
           </div>
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
-            <h2 className="text-xl font-bold">Savings Pots</h2>
-            <div className="mt-5 space-y-5">
+          <div className={`${cardClass} p-6`}>
+            <h2 className="text-xl font-black">Savings Pots</h2>
+            <div className="mt-5 space-y-4">
               {savingsGoals.map((goal) => {
-                const goalProgress = Number(goal.target) > 0 ? Math.round((Number(goal.saved) / Number(goal.target)) * 100) : 0;
+                const goalProgress =
+                  Number(goal.target) > 0
+                    ? Math.round((Number(goal.saved) / Number(goal.target)) * 100)
+                    : 0;
 
                 return (
-                  <div key={goal.name} className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                  <div
+                    key={goal.name}
+                    className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-4"
+                  >
                     <div className="mb-3 flex items-center justify-between gap-4">
                       <div>
-                        <p className="font-semibold">{goal.name}</p>
-                        <p className="text-sm text-slate-400">
-                          {formatGBP(Number(goal.saved))} saved of {formatGBP(Number(goal.target))}
+                        <p className="font-black">{goal.name}</p>
+                        <p className="text-sm text-pink-50/55">
+                          {formatGBP(Number(goal.saved))} saved of{" "}
+                          {formatGBP(Number(goal.target))}
                         </p>
                       </div>
-                      <p className="font-bold text-emerald-300">{goalProgress}%</p>
+                      <p className="font-black text-pink-100">{goalProgress}%</p>
                     </div>
+
                     <ProgressBar value={goalProgress} />
 
                     <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto]">
@@ -908,11 +1025,11 @@ async function sendTestNotification() {
                         type="number"
                         min="0"
                         placeholder={`New target: ${formatGBP(Number(goal.target))}`}
-                        className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                        className={inputClass}
                       />
                       <button
                         onClick={() => updateSavingsTarget(goal)}
-                        className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-3 text-sm font-bold text-emerald-100 transition hover:scale-[1.02] hover:border-emerald-300/40"
+                        className={softButtonClass}
                       >
                         Save target
                       </button>
@@ -923,20 +1040,20 @@ async function sendTestNotification() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
-            <h2 className="text-xl font-bold">Add Property</h2>
-            <div className="mt-4 grid gap-2">
+          <div className={`${cardClass} p-6`}>
+            <h2 className="text-xl font-black">Add Property</h2>
+            <div className="mt-4 grid gap-3">
               <input
                 value={propertyTitle}
                 onChange={(event) => setPropertyTitle(event.target.value)}
                 placeholder="Property title, e.g. 2 Bed House - Truro"
-                className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                className={inputClass}
               />
               <input
                 value={propertyLocation}
                 onChange={(event) => setPropertyLocation(event.target.value)}
                 placeholder="Location"
-                className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                className={inputClass}
               />
               <div className="grid gap-3 md:grid-cols-2">
                 <input
@@ -945,7 +1062,7 @@ async function sendTestNotification() {
                   type="number"
                   min="0"
                   placeholder="Monthly rent"
-                  className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                  className={inputClass}
                 />
                 <input
                   value={propertyDeposit}
@@ -953,121 +1070,135 @@ async function sendTestNotification() {
                   type="number"
                   min="0"
                   placeholder="Deposit"
-                  className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                  className={inputClass}
                 />
               </div>
               <input
                 value={propertyLink}
                 onChange={(event) => setPropertyLink(event.target.value)}
                 placeholder="Rightmove, Zoopla, OpenRent or agent link"
-                className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                className={inputClass}
               />
               <input
                 value={propertyImageUrl}
                 onChange={(event) => setPropertyImageUrl(event.target.value)}
                 placeholder="Image URL for preview"
-                className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+                className={inputClass}
               />
-              <button
-                onClick={addProperty}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
-              >
+              <button onClick={addProperty} className={primaryButtonClass}>
                 <Plus size={18} /> Add property
               </button>
             </div>
           </div>
         </section>
 
-        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
-          <h2 className="text-xl font-bold">Cornwall Property Watchlist</h2>
-          <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <section id="properties" className={`${cardClass} p-6`}>
+          <h2 className="text-xl font-black">Cornwall Property Watchlist</h2>
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
             {properties.length === 0 && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-sm text-slate-400 lg:col-span-2">
+              <div className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-5 text-sm text-pink-50/60 lg:col-span-2">
                 No properties added yet. Add properties you and Dannie are interested in.
               </div>
             )}
 
             {properties.map((property) => (
-              <div key={property.id || `${property.title}-${property.location}`} className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05]">
+              <div
+                key={property.id || `${property.title}-${property.location}`}
+                className="overflow-hidden rounded-[2rem] border border-pink-200/15 bg-white/[0.08] shadow-xl shadow-rose-950/25 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12] hover:shadow-2xl"
+              >
                 {property.image_url ? (
                   <img
                     src={property.image_url}
                     alt={property.title}
-                    className="h-48 w-full object-cover"
+                    className="h-52 w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-48 w-full items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950/40 text-sm text-slate-400">
+                  <div className="flex h-52 w-full items-center justify-center bg-gradient-to-br from-rose-950 via-pink-950 to-red-950 text-sm text-pink-50/45">
                     No image preview added
                   </div>
                 )}
 
-                <div className="p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h3 className="font-bold">{property.title}</h3>
-                    <p className="text-sm text-slate-400">{property.location}</p>
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-black">{property.title}</h3>
+                      <p className="text-sm text-pink-50/55">{property.location}</p>
+                    </div>
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(
+                        property.status
+                      )}`}
+                    >
+                      {property.status}
+                    </span>
                   </div>
-                  <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-3 py-1 text-xs font-semibold text-emerald-200">
-                    {property.status}
-                  </span>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                  <div className="rounded-xl bg-white/[0.06] p-3">
-                    <p className="text-slate-400">Monthly rent</p>
-                    <p className="font-bold">{formatGBP(Number(property.rent))}</p>
-                  </div>
-                  <div className="rounded-xl bg-white/[0.06] p-3">
-                    <p className="text-slate-400">Deposit</p>
-                    <p className="font-bold">{formatGBP(Number(property.deposit))}</p>
-                  </div>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
-                  <select
-                    value={property.status}
-                    onChange={(event) => updatePropertyStatus(property.id, event.target.value)}
-                    className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm outline-none ring-emerald-300/30 focus:ring-4"
-                  >
-                    <option>Watching</option>
-                    <option>Interested</option>
-                    <option>Viewing Booked</option>
-                    <option>Applied</option>
-                    <option>Rejected</option>
-                    <option>No Longer Interested</option>
-                  </select>
 
-                  <button
-                    onClick={() => deleteProperty(property.id)}
-                    className="rounded-2xl border border-red-300/20 bg-red-400/10 px-4 py-3 text-sm font-bold text-red-100 transition hover:scale-[1.02] hover:border-red-300/40"
-                  >
-                    Delete
-                  </button>
-                </div>
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                    <div className="rounded-2xl bg-white/[0.08] p-3">
+                      <p className="text-pink-50/50">Monthly rent</p>
+                      <p className="font-black">{formatGBP(Number(property.rent))}</p>
+                    </div>
+                    <div className="rounded-2xl bg-white/[0.08] p-3">
+                      <p className="text-pink-50/50">Deposit</p>
+                      <p className="font-black">{formatGBP(Number(property.deposit))}</p>
+                    </div>
+                  </div>
 
-                {property.link && (
-                  <a
-                    href={property.link}
-                    target="_blank"
-                    className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:text-cyan-100"
-                  >
-                    <LinkIcon size={16} /> Open listing
-                  </a>
-                )}
+                  <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+                    <select
+                      value={property.status}
+                      onChange={(event) =>
+                        updatePropertyStatus(property.id, event.target.value)
+                      }
+                      className={inputClass}
+                    >
+                      <option>Watching</option>
+                      <option>Interested</option>
+                      <option>Viewing Booked</option>
+                      <option>Applied</option>
+                      <option>Rejected</option>
+                      <option>No Longer Interested</option>
+                    </select>
+
+                    <button
+                      onClick={() => deleteProperty(property.id)}
+                      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-red-300/25 bg-red-400/10 px-4 py-3 text-sm font-black text-red-100 transition-all duration-300 hover:scale-[1.03] hover:bg-red-400/15"
+                    >
+                      <Trash2 size={16} /> Delete
+                    </button>
+                  </div>
+
+                  {property.link && (
+                    <a
+                      href={property.link}
+                      target="_blank"
+                      className="mt-4 inline-flex items-center gap-2 text-sm font-black text-pink-100 hover:text-white"
+                    >
+                      <LinkIcon size={16} /> Open listing
+                    </a>
+                  )}
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+        <section id="planner" className={`${cardClass} p-6`}>
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <h2 className="text-xl font-bold">Furniture & Appliance Planner</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <h2 className="text-xl font-black">Furniture & Appliance Planner</h2>
+              <p className="mt-1 text-sm text-pink-50/60">
                 Add everything you need for the move and track estimated costs.
               </p>
             </div>
-            <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-3 text-sm font-bold text-emerald-100">
-              Total estimate: {formatGBP(plannerItems.reduce((sum, item) => sum + Number(item.estimate), 0))}
+            <div className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-4 py-3 text-sm font-black text-pink-50">
+              Total estimate:{" "}
+              {formatGBP(
+                plannerItems.reduce(
+                  (sum, item) => sum + Number(item.estimate),
+                  0
+                )
+              )}
             </div>
           </div>
 
@@ -1076,13 +1207,13 @@ async function sendTestNotification() {
               value={plannerItemName}
               onChange={(event) => setPlannerItemName(event.target.value)}
               placeholder="Item name, e.g. Sofa, TV, Kettle"
-              className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+              className={inputClass}
             />
 
             <select
               value={plannerItemCategory}
               onChange={(event) => setPlannerItemCategory(event.target.value)}
-              className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm outline-none ring-emerald-300/30 focus:ring-4"
+              className={inputClass}
             >
               <option>Furniture</option>
               <option>Appliance</option>
@@ -1099,55 +1230,104 @@ async function sendTestNotification() {
               type="number"
               min="0"
               placeholder="Estimate"
-              className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-2.5 text-sm outline-none ring-emerald-300/30 placeholder:text-slate-500 focus:ring-4"
+              className={inputClass}
             />
 
             <select
               value={plannerItemPriority}
               onChange={(event) => setPlannerItemPriority(event.target.value)}
-              className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm outline-none ring-emerald-300/30 focus:ring-4"
+              className={inputClass}
             >
               <option>High</option>
               <option>Medium</option>
               <option>Low</option>
             </select>
 
-            <button
-              onClick={addPlannerItem}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
-            >
+            <button onClick={addPlannerItem} className={primaryButtonClass}>
               <Plus size={18} /> Add item
             </button>
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {plannerItems.length === 0 && (
-              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-sm text-slate-400 md:col-span-2 lg:col-span-4">
+              <div className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-5 text-sm text-pink-50/60 md:col-span-2 lg:col-span-4">
                 No furniture or appliance items added yet.
               </div>
             )}
 
-            {plannerItems.map((plannerItem) => (
-              <div key={plannerItem.id} className="rounded-2xl border border-white/10 bg-white/[0.05] p-4">
-                <Sofa className="text-emerald-300" />
-                <h3 className="mt-3 font-bold">{plannerItem.item}</h3>
-                <p className="text-sm text-slate-400">{plannerItem.category}</p>
-                <div className="mt-4 flex items-center justify-between">
-                  <p className="font-bold">{formatGBP(Number(plannerItem.estimate))}</p>
-                  <span className="rounded-full bg-white/[0.08] px-3 py-1 text-xs font-semibold text-slate-200">
-                    {plannerItem.priority}
-                  </span>
-                </div>
-                <button
-                  onClick={() => deletePlannerItem(plannerItem.id)}
-                  className="mt-4 w-full rounded-2xl border border-red-300/20 bg-red-400/10 px-4 py-2 text-sm font-bold text-red-100 transition hover:scale-[1.02] hover:border-red-300/40"
+            {plannerItems.map((plannerItem) => {
+              const Icon =
+                plannerItem.category === "Appliance" ? WashingMachine : Sofa;
+
+              return (
+                <div
+                  key={plannerItem.id}
+                  className="rounded-3xl border border-pink-200/15 bg-white/[0.08] p-4 shadow-xl shadow-rose-950/20 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12]"
                 >
-                  Remove
-                </button>
-              </div>
-            ))}
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-pink-300/15">
+                    <Icon className="text-pink-100" />
+                  </div>
+                  <h3 className="mt-3 font-black">{plannerItem.item}</h3>
+                  <p className="text-sm text-pink-50/55">{plannerItem.category}</p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <p className="font-black">
+                      {formatGBP(Number(plannerItem.estimate))}
+                    </p>
+                    <span className="rounded-full bg-white/[0.10] px-3 py-1 text-xs font-black text-pink-50">
+                      {plannerItem.priority}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => deletePlannerItem(plannerItem.id)}
+                    className="mt-4 w-full rounded-2xl border border-red-300/25 bg-red-400/10 px-4 py-2 text-sm font-black text-red-100 transition-all duration-300 hover:scale-[1.03] hover:bg-red-400/15"
+                  >
+                    Remove
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </section>
+
+        <nav className="fixed inset-x-4 bottom-4 z-40 rounded-[1.6rem] border border-pink-200/20 bg-rose-950/80 p-2 shadow-2xl shadow-rose-950/60 backdrop-blur-2xl md:hidden">
+          <div className="grid grid-cols-5 gap-1">
+            <a
+              href="#overview"
+              className="flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black text-pink-50/70 hover:bg-white/10 hover:text-white"
+            >
+              <Home size={18} />
+              Home
+            </a>
+            <a
+              href="#savings"
+              className="flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black text-pink-50/70 hover:bg-white/10 hover:text-white"
+            >
+              <PiggyBank size={18} />
+              Save
+            </a>
+            <a
+              href="#properties"
+              className="flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black text-pink-50/70 hover:bg-white/10 hover:text-white"
+            >
+              <Building2 size={18} />
+              Homes
+            </a>
+            <a
+              href="#planner"
+              className="flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black text-pink-50/70 hover:bg-white/10 hover:text-white"
+            >
+              <Sofa size={18} />
+              Items
+            </a>
+            <button
+              onClick={sendMotivation}
+              className="flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-black text-pink-50/70 hover:bg-white/10 hover:text-white"
+            >
+              <Heart size={18} fill="currentColor" />
+              Love
+            </button>
+          </div>
+        </nav>
       </div>
     </main>
   );
