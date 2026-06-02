@@ -102,19 +102,19 @@ const motivationalMessages = [
 ];
 
 const cardClass =
-  "rounded-[2.25rem] border border-fuchsia-200/20 bg-gradient-to-br from-white/[0.16] via-white/[0.08] to-pink-300/[0.06] shadow-2xl shadow-black/35 backdrop-blur-2xl ring-1 ring-white/10";
+  "relative overflow-hidden rounded-[2.25rem] border border-fuchsia-200/30 bg-gradient-to-br from-white/[0.18] via-fuchsia-200/[0.10] to-rose-300/[0.08] shadow-2xl shadow-black/35 backdrop-blur-2xl ring-1 ring-white/10 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-fuchsia-200/25 before:content-[''] before:animate-pulse";
 
 const innerCardClass =
-  "rounded-[2rem] border border-fuchsia-200/15 bg-gradient-to-br from-white/[0.12] via-white/[0.07] to-rose-300/[0.05] shadow-xl shadow-black/25 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-pink-200/30 hover:bg-white/[0.14] hover:shadow-2xl hover:shadow-pink-950/30";
+  "relative overflow-hidden rounded-[2rem] border border-fuchsia-200/25 bg-gradient-to-br from-white/[0.14] via-pink-200/[0.08] to-purple-300/[0.06] shadow-xl shadow-black/25 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-fuchsia-100/50 hover:bg-white/[0.18] hover:shadow-2xl hover:shadow-fuchsia-950/30 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-fuchsia-200/20 before:content-[''] before:animate-pulse";
 
 const inputClass =
-  "rounded-2xl border border-pink-200/15 bg-black/25 px-4 py-3 text-sm text-white outline-none ring-pink-300/30 placeholder:text-pink-100/45 focus:border-pink-200/35 focus:ring-4";
+  "rounded-2xl border border-fuchsia-200/20 bg-black/25 px-4 py-3 text-sm text-white outline-none ring-fuchsia-300/30 placeholder:text-fuchsia-100/50 transition-all duration-300 focus:border-fuchsia-100/50 focus:bg-black/35 focus:ring-4";
 
 const primaryButtonClass =
-  "inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300 px-5 py-3 text-sm font-black text-rose-950 shadow-[0_0_30px_rgba(244,114,182,0.38)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_48px_rgba(244,114,182,0.62)]";
+  "inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300 px-5 py-3 text-sm font-black text-rose-950 shadow-[0_0_30px_rgba(244,114,182,0.45)] transition-all duration-300 hover:scale-[1.04] hover:from-fuchsia-100 hover:via-pink-200 hover:to-rose-200 hover:shadow-[0_0_55px_rgba(244,114,182,0.75)] active:scale-[0.98]";
 
 const softButtonClass =
-  "rounded-2xl border border-pink-200/20 bg-white/[0.10] px-5 py-3 text-sm font-bold text-pink-50 shadow-lg shadow-black/20 transition-all duration-300 hover:scale-[1.03] hover:border-pink-100/30 hover:bg-white/[0.16]";
+  "rounded-2xl border border-fuchsia-200/25 bg-white/[0.11] px-5 py-3 text-sm font-bold text-pink-50 shadow-lg shadow-black/20 transition-all duration-300 hover:scale-[1.03] hover:border-fuchsia-100/50 hover:bg-white/[0.18] hover:shadow-[0_0_30px_rgba(217,70,239,0.25)]";
 
 function formatGBP(value: number) {
   return new Intl.NumberFormat("en-GB", {
@@ -128,7 +128,7 @@ function ProgressBar({ value }: { value: number }) {
   return (
     <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
       <div
-        className="h-3 rounded-full bg-gradient-to-r from-pink-200 via-rose-300 to-red-300 shadow-[0_0_22px_rgba(251,113,133,0.55)] transition-all duration-500"
+        className="h-3 rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300 shadow-[0_0_22px_rgba(251,113,133,0.55)] transition-all duration-500"
         style={{ width: `${Math.min(value, 100)}%` }}
       />
     </div>
@@ -138,7 +138,7 @@ function ProgressBar({ value }: { value: number }) {
 function statusClass(status: string) {
   switch (status) {
     case "Interested":
-      return "border-pink-300/30 bg-pink-300/15 text-pink-100";
+      return "border-pink-300/30 bg-fuchsia-300/15 text-fuchsia-100";
     case "Viewing Booked":
       return "border-purple-300/30 bg-purple-300/15 text-purple-100";
     case "Applied":
@@ -763,9 +763,9 @@ export default function HomePage() {
 
       {!activeUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-rose-950/80 p-6 backdrop-blur-2xl">
-          <div className="relative w-full max-w-md overflow-hidden rounded-[2.25rem] border border-pink-200/20 bg-white/[0.11] p-7 text-center shadow-2xl shadow-rose-950/50 backdrop-blur-2xl">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-gradient-to-br from-pink-200 via-rose-300 to-red-300 text-rose-950 shadow-[0_0_35px_rgba(244,114,182,0.45)]">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[2.25rem] border border-fuchsia-200/25 bg-white/[0.11] p-7 text-center shadow-2xl shadow-rose-950/50 backdrop-blur-2xl">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-gradient-to-br from-fuchsia-200 via-pink-300 to-rose-300 text-rose-950 shadow-[0_0_35px_rgba(244,114,182,0.45)]">
               <Heart size={30} fill="currentColor" />
             </div>
             <h2 className="mt-5 text-3xl font-black tracking-tight">
@@ -799,17 +799,17 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,113,133,0.32),transparent_28%),radial-gradient(circle_at_bottom,rgba(244,114,182,0.25),transparent_35%)]" />
           <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-300/20 blur-3xl" />
 
-          <div className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-pink-200/20 bg-white/[0.11] p-8 text-center shadow-2xl shadow-rose-950/60 backdrop-blur-2xl">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-fuchsia-200/25 bg-white/[0.11] p-8 text-center shadow-2xl shadow-rose-950/60 backdrop-blur-2xl">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300" />
 
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-pink-200 via-rose-300 to-red-300 text-rose-950 shadow-[0_0_45px_rgba(244,114,182,0.45)]">
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-fuchsia-200 via-pink-300 to-rose-300 text-rose-950 shadow-[0_0_45px_rgba(244,114,182,0.45)]">
               <Heart size={42} fill="currentColor" />
             </div>
 
-            <p className="mt-7 text-sm font-bold uppercase tracking-[0.35em] text-pink-100/80">
+            <p className="mt-7 text-sm font-bold uppercase tracking-[0.35em] text-fuchsia-100/80">
               Welcome back
             </p>
-            <h2 className="mt-3 bg-gradient-to-r from-pink-100 via-white to-rose-100 bg-clip-text text-6xl font-black tracking-tight text-transparent">
+            <h2 className="mt-3 bg-gradient-to-r from-fuchsia-100 via-white to-pink-100 bg-clip-text text-6xl font-black tracking-tight text-transparent">
               {activeUser}
             </h2>
             <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-pink-50/70">
@@ -817,7 +817,7 @@ export default function HomePage() {
             </p>
 
             <div className="mx-auto mt-7 h-2 w-44 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
+              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300" />
             </div>
           </div>
         </div>
@@ -830,7 +830,7 @@ export default function HomePage() {
               <div className="inline-flex items-center gap-2 rounded-full border border-pink-200/25 bg-pink-200/10 px-4 py-2 text-sm font-bold text-pink-50">
                 <Heart size={16} fill="currentColor" /> Jordan & Dannie’s love nest
               </div>
-              <h1 className="mt-5 max-w-4xl bg-gradient-to-r from-pink-100 via-white to-rose-100 bg-clip-text text-4xl font-black tracking-tight text-transparent md:text-6xl">
+              <h1 className="mt-5 max-w-4xl bg-gradient-to-r from-fuchsia-100 via-white to-pink-100 bg-clip-text text-4xl font-black tracking-tight text-transparent md:text-6xl">
                 Our Dream Home Fund
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-pink-50/70">
@@ -846,16 +846,45 @@ export default function HomePage() {
         </header>
 
         {(isLoading || message) && (
-          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.10] p-4 text-sm font-medium text-pink-50 shadow-xl shadow-rose-950/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-fuchsia-200/25 bg-white/[0.10] p-4 text-sm font-medium text-pink-50 shadow-xl shadow-rose-950/20 backdrop-blur-xl">
             {isLoading ? "Loading your saved data..." : message}
           </div>
         )}
 
+        <section className={`${cardClass} p-4`}>
+          <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              ["#overview", "Overview"],
+              ["#savings", "Savings"],
+              ["#pots", "Pots"],
+              ["#properties", "Properties"],
+              ["#planner", "Planner"],
+              ["#notifications", "Alerts"],
+            ].map(([href, label]) => (
+              <a
+                key={href}
+                href={href}
+                className="rounded-2xl border border-fuchsia-200/20 bg-white/[0.08] px-4 py-3 text-center text-sm font-black text-pink-50/80 transition-all duration-300 hover:-translate-y-0.5 hover:border-fuchsia-100/50 hover:bg-white/[0.16] hover:text-white hover:shadow-[0_0_24px_rgba(217,70,239,0.25)]"
+              >
+                {label}
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 01</p>
+            <h2 className="mt-2 text-2xl font-black md:text-3xl">Overview</h2>
+          </div>
+          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
+        </div>
+
         <section id="overview" className="grid gap-4 md:grid-cols-4">
           <div className={`${innerCardClass} p-5`}>
             <div className="flex items-center gap-3 text-pink-50/75">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-300/15">
-                <PiggyBank className="text-pink-100" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-300/15">
+                <PiggyBank className="text-fuchsia-100" />
               </div>
               <p className="font-bold">Saved so far</p>
             </div>
@@ -915,6 +944,14 @@ export default function HomePage() {
           </div>
         </section>
 
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 02</p>
+            <h2 className="mt-2 text-2xl font-black md:text-3xl">Monthly plan</h2>
+          </div>
+          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
+        </div>
+
         <section id="monthly" className="grid gap-6 lg:grid-cols-3">
           <div className={`${cardClass} p-6 lg:col-span-2`}>
             <div className="flex items-center justify-between gap-4">
@@ -926,8 +963,8 @@ export default function HomePage() {
                   {formatGBP(jointMonthlyTarget)}
                 </h2>
               </div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-300/15">
-                <WalletCards className="text-pink-100" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-fuchsia-300/15">
+                <WalletCards className="text-fuchsia-100" />
               </div>
             </div>
 
@@ -957,10 +994,18 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className={`${cardClass} p-6`}>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 06</p>
+            <h2 className="mt-2 text-2xl font-black md:text-3xl">Alerts & motivation</h2>
+          </div>
+          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
+        </div>
+
+        <section id="notifications" className={`${cardClass} p-6`}>
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-300/15">
-              <Bell className="text-pink-100" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-300/15">
+              <Bell className="text-fuchsia-100" />
             </div>
             <div>
               <h2 className="text-xl font-black">Push Notifications</h2>
@@ -977,12 +1022,20 @@ export default function HomePage() {
 
             <button
               onClick={sendMotivation}
-              className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-5 py-3 text-sm font-bold text-pink-50 transition-all duration-300 hover:scale-[1.03] hover:bg-pink-200/15"
+              className="rounded-2xl border border-fuchsia-200/25 bg-pink-200/10 px-5 py-3 text-sm font-bold text-pink-50 transition-all duration-300 hover:scale-[1.03] hover:bg-pink-200/15"
             >
               Send motivation
             </button>
           </div>
         </section>
+
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 03</p>
+            <h2 className="mt-2 text-2xl font-black md:text-3xl">Savings & contributions</h2>
+          </div>
+          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
+        </div>
 
         <section id="savings" className={`${cardClass} p-6`}>
           <h2 className="text-xl font-black">Add Savings Contribution</h2>
@@ -1026,7 +1079,15 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="grid gap-6 lg:grid-cols-2">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 04</p>
+            <h2 className="mt-2 text-2xl font-black md:text-3xl">Pots & property adding</h2>
+          </div>
+          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
+        </div>
+
+        <section id="pots" className="grid gap-6 lg:grid-cols-2">
           <div className={`${cardClass} p-6`}>
             <h2 className="text-xl font-black">Savings Pots</h2>
             <div className="mt-5 space-y-4">
@@ -1039,7 +1100,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={goal.name}
-                    className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-4"
+                    className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.07] p-4"
                   >
                     <div className="mb-3 flex items-center justify-between gap-4">
                       <div>
@@ -1049,7 +1110,7 @@ export default function HomePage() {
                           {formatGBP(Number(goal.target))}
                         </p>
                       </div>
-                      <p className="font-black text-pink-100">{goalProgress}%</p>
+                      <p className="font-black text-fuchsia-100">{goalProgress}%</p>
                     </div>
 
                     <ProgressBar value={goalProgress} />
@@ -1133,11 +1194,19 @@ export default function HomePage() {
           </div>
         </section>
 
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 05</p>
+            <h2 className="mt-2 text-2xl font-black md:text-3xl">Property watchlist</h2>
+          </div>
+          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
+        </div>
+
         <section id="properties" className={`${cardClass} p-6`}>
           <h2 className="text-xl font-black">Cornwall Love Nest Watchlist</h2>
           <div className="mt-5 grid gap-5 lg:grid-cols-2">
             {properties.length === 0 && (
-              <div className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-5 text-sm text-pink-50/60 lg:col-span-2">
+              <div className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.07] p-5 text-sm text-pink-50/60 lg:col-span-2">
                 No properties added yet. Add properties you and Dannie are interested in.
               </div>
             )}
@@ -1145,7 +1214,7 @@ export default function HomePage() {
             {properties.map((property) => (
               <div
                 key={property.id || `${property.title}-${property.location}`}
-                className="overflow-hidden rounded-[2rem] border border-pink-200/15 bg-white/[0.08] shadow-xl shadow-rose-950/25 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12] hover:shadow-2xl"
+                className="overflow-hidden rounded-[2rem] border border-fuchsia-200/20 bg-white/[0.08] shadow-xl shadow-rose-950/25 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12] hover:shadow-2xl"
               >
                 {property.image_url ? (
                   <img
@@ -1213,7 +1282,7 @@ export default function HomePage() {
                     <a
                       href={property.link}
                       target="_blank"
-                      className="mt-4 inline-flex items-center gap-2 text-sm font-black text-pink-100 hover:text-white"
+                      className="mt-4 inline-flex items-center gap-2 text-sm font-black text-fuchsia-100 hover:text-white"
                     >
                       <LinkIcon size={16} /> Open listing
                     </a>
@@ -1224,6 +1293,14 @@ export default function HomePage() {
           </div>
         </section>
 
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 06</p>
+            <h2 className="mt-2 text-2xl font-black md:text-3xl">Furniture & appliances</h2>
+          </div>
+          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
+        </div>
+
         <section id="planner" className={`${cardClass} p-6`}>
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
@@ -1232,7 +1309,7 @@ export default function HomePage() {
                 Add everything you need for the move and track estimated costs.
               </p>
             </div>
-            <div className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-4 py-3 text-sm font-black text-pink-50">
+            <div className="rounded-2xl border border-fuchsia-200/25 bg-pink-200/10 px-4 py-3 text-sm font-black text-pink-50">
               Total estimate:{" "}
               {formatGBP(
                 plannerItems.reduce(
@@ -1291,7 +1368,7 @@ export default function HomePage() {
 
           <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {plannerItems.length === 0 && (
-              <div className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-5 text-sm text-pink-50/60 md:col-span-2 lg:col-span-4">
+              <div className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.07] p-5 text-sm text-pink-50/60 md:col-span-2 lg:col-span-4">
                 No furniture or appliance items added yet.
               </div>
             )}
@@ -1303,10 +1380,10 @@ export default function HomePage() {
               return (
                 <div
                   key={plannerItem.id}
-                  className="rounded-3xl border border-pink-200/15 bg-white/[0.08] p-4 shadow-xl shadow-rose-950/20 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12]"
+                  className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.08] p-4 shadow-xl shadow-rose-950/20 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12]"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-pink-300/15">
-                    <Icon className="text-pink-100" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-300/15">
+                    <Icon className="text-fuchsia-100" />
                   </div>
                   <h3 className="mt-3 font-black">{plannerItem.item}</h3>
                   <p className="text-sm text-pink-50/55">{plannerItem.category}</p>
@@ -1330,7 +1407,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <nav className="fixed inset-x-4 bottom-4 z-40 rounded-[1.6rem] border border-pink-200/20 bg-rose-950/80 p-2 shadow-2xl shadow-rose-950/60 backdrop-blur-2xl md:hidden">
+        <nav className="fixed inset-x-4 bottom-4 z-40 rounded-[1.6rem] border border-fuchsia-200/25 bg-rose-950/80 p-2 shadow-2xl shadow-rose-950/60 backdrop-blur-2xl md:hidden">
           <div className="grid grid-cols-5 gap-1">
             <a
               href="#overview"
