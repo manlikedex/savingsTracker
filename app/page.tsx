@@ -515,10 +515,11 @@ async function enablePushNotifications() {
     }),
   });
 
-  if (!response.ok) {
-    setMessage("Could not save push subscription.");
-    return;
-  }
+if (!response.ok) {
+  const data = await response.json();
+  setMessage(`Could not save push subscription: ${data.error || "Unknown error"}`);
+  return;
+}
 
   setPushEnabled(true);
   localStorage.setItem("pushEnabled", "true");
