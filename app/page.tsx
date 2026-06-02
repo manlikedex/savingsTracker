@@ -78,7 +78,7 @@ function ProgressBar({ value }: { value: number }) {
   return (
     <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
       <div
-        className="h-3 rounded-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-lime-300 shadow-[0_0_18px_rgba(52,211,153,0.45)] transition-all"
+        className="h-3 rounded-full bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 shadow-[0_0_18px_rgba(52,211,153,0.45)] transition-all"
         style={{ width: `${Math.min(value, 100)}%` }}
       />
     </div>
@@ -628,14 +628,14 @@ async function sendTestNotification() {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-slate-950 p-6 text-white">
-      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.22),transparent_34%),radial-gradient(circle_at_top_right,rgba(16,185,129,0.20),transparent_30%),linear-gradient(135deg,#020617_0%,#0f172a_45%,#111827_100%)]" />
-      <div className="fixed left-1/2 top-0 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
+  <main className="min-h-screen overflow-hidden bg-rose-950 p-6 text-white">
+  <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(244,114,182,0.32),transparent_34%),radial-gradient(circle_at_top_right,rgba(251,113,133,0.28),transparent_30%),radial-gradient(circle_at_bottom,rgba(190,24,93,0.25),transparent_38%),linear-gradient(135deg,#4c0519_0%,#831843_45%,#be123c_100%)]" />
+  <div className="fixed left-1/2 top-0 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-pink-400/20 blur-3xl" />
 
       {!activeUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-6 backdrop-blur-xl">
           <div className="w-full max-w-md rounded-[2rem] border border-white/10 bg-white/[0.08] p-6 text-center shadow-2xl shadow-black/40 backdrop-blur-xl">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 text-rose-950">
               <Heart size={26} />
             </div>
             <h2 className="mt-5 text-2xl font-bold">Who’s using the tracker?</h2>
@@ -667,9 +667,9 @@ async function sendTestNotification() {
           <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-emerald-400/20 blur-3xl" />
 
           <div className="relative w-full max-w-lg overflow-hidden rounded-[2.25rem] border border-white/10 bg-white/[0.08] p-8 text-center shadow-2xl shadow-black/50 backdrop-blur-2xl">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-400 via-emerald-400 to-lime-300" />
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-300 via-rose-300 to-red-300" />
 
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-gradient-to-br from-cyan-300 via-emerald-300 to-lime-300 text-slate-950 shadow-2xl shadow-emerald-950/50">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-gradient-to-br from-cyan-300 via-emerald-300 to-lime-300 text-rose-950 shadow-2xl shadow-emerald-950/50">
               <Heart size={36} fill="currentColor" />
             </div>
 
@@ -684,14 +684,14 @@ async function sendTestNotification() {
             </p>
 
             <div className="mx-auto mt-7 h-2 w-40 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-cyan-400 to-emerald-400" />
+              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-pink-300 via-rose-300 to-red-300" />
             </div>
           </div>
         </div>
       )}
 
       <div className="mx-auto max-w-7xl space-y-6">
-        <header className="rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-2xl shadow-black/30 backdrop-blur-xl md:p-8">
+        <header className="rounded-[2rem] border border-pink-200/20 bg-white/[0.08] p-6 shadow-2xl shadow-black/30 backdrop-blur-xl md:p-8">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-200">
@@ -708,7 +708,7 @@ async function sendTestNotification() {
             <div className="flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={switchUser}
-                className="rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition hover:scale-[1.02] hover:border-white/20"
+                className="rounded-2xl border border-pink-200/20 bg-white/[0.08] px-5 py-3 text-sm font-semibold text-slate-200 shadow-lg shadow-black/20 transition hover:scale-[1.02] hover:border-white/20"
               >
                 Switch user
               </button>
@@ -718,13 +718,13 @@ async function sendTestNotification() {
         </header>
 
         {(isLoading || message) && (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 text-sm text-slate-200 backdrop-blur-xl">
+          <div className="rounded-2xl border border-pink-200/20 bg-white/[0.08] p-4 text-sm text-slate-200 backdrop-blur-xl">
             {isLoading ? "Loading your saved data..." : message}
           </div>
         )}
 
         <section className="grid gap-4 md:grid-cols-4">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
             <div className="flex items-center gap-3 text-slate-300">
               <PiggyBank className="text-emerald-300" />
               <p className="font-medium">Saved so far</p>
@@ -732,7 +732,7 @@ async function sendTestNotification() {
             <p className="mt-4 text-3xl font-bold">{formatGBP(totals.totalSaved)}</p>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
             <div className="flex items-center gap-3 text-slate-300">
               <TrendingUp className="text-cyan-300" />
               <p className="font-medium">Move-in target</p>
@@ -740,7 +740,7 @@ async function sendTestNotification() {
             <p className="mt-4 text-3xl font-bold">{formatGBP(totals.totalTarget)}</p>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
             <div className="flex items-center gap-3 text-slate-300">
               <Home className="text-lime-300" />
               <p className="font-medium">Remaining</p>
@@ -748,7 +748,7 @@ async function sendTestNotification() {
             <p className="mt-4 text-3xl font-bold">{formatGBP(totals.remaining)}</p>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-5 shadow-xl shadow-black/20 backdrop-blur-xl">
             <p className="font-medium text-slate-300">Overall progress</p>
             <p className="mt-4 text-3xl font-bold">{totals.progress}%</p>
             <div className="mt-3">
@@ -758,7 +758,7 @@ async function sendTestNotification() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl lg:col-span-2">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl lg:col-span-2">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-sm text-slate-400">Joint monthly goal</p>
@@ -785,7 +785,7 @@ async function sendTestNotification() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
             <p className="text-sm text-slate-400">Estimated time left</p>
             <h2 className="mt-2 text-3xl font-bold">
               {totals.monthsToGoal > 0 ? `${totals.monthsToGoal} months` : "Set target"}
@@ -796,7 +796,7 @@ async function sendTestNotification() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
   <div className="flex items-center gap-3">
     <Bell className="text-emerald-300" />
     <h2 className="text-xl font-bold">Push Notifications</h2>
@@ -809,14 +809,14 @@ async function sendTestNotification() {
   <div className="mt-5 grid gap-3 sm:grid-cols-3">
     <button
       onClick={enablePushNotifications}
-      className="rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:scale-[1.02]"
+      className="rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
     >
       {pushEnabled ? "Notifications enabled" : "Enable notifications"}
     </button>
 
     <button
       onClick={sendTestNotification}
-      className="rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-2.5 text-sm font-bold text-slate-200 transition hover:scale-[1.02] hover:border-white/20"
+      className="rounded-2xl border border-pink-200/20 bg-white/[0.08] px-5 py-2.5 text-sm font-bold text-slate-200 transition hover:scale-[1.02] hover:border-white/20"
     >
       Send test
     </button>
@@ -830,7 +830,7 @@ async function sendTestNotification() {
   </div>
 </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
           <h2 className="text-xl font-bold">Add Savings Contribution</h2>
           <div className="mt-5 grid gap-3 md:grid-cols-4">
             <select
@@ -868,7 +868,7 @@ async function sendTestNotification() {
 
             <button
               onClick={addContribution}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:scale-[1.02]"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
             >
               <Plus size={18} /> Add saving
             </button>
@@ -876,7 +876,7 @@ async function sendTestNotification() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
             <h2 className="text-xl font-bold">Savings Pots</h2>
             <div className="mt-5 space-y-5">
               {savingsGoals.map((goal) => {
@@ -922,7 +922,7 @@ async function sendTestNotification() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
             <h2 className="text-xl font-bold">Add Property</h2>
             <div className="mt-4 grid gap-2">
               <input
@@ -969,7 +969,7 @@ async function sendTestNotification() {
               />
               <button
                 onClick={addProperty}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:scale-[1.02]"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
               >
                 <Plus size={18} /> Add property
               </button>
@@ -977,7 +977,7 @@ async function sendTestNotification() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
           <h2 className="text-xl font-bold">Cornwall Property Watchlist</h2>
           <div className="mt-5 grid gap-4 lg:grid-cols-2">
             {properties.length === 0 && (
@@ -1057,7 +1057,7 @@ async function sendTestNotification() {
           </div>
         </section>
 
-        <section className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+        <section className="rounded-3xl border border-pink-200/20 bg-white/[0.08] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <h2 className="text-xl font-bold">Furniture & Appliance Planner</h2>
@@ -1113,7 +1113,7 @@ async function sendTestNotification() {
 
             <button
               onClick={addPlannerItem}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:scale-[1.02]"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-300 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-bold text-rose-950 transition hover:scale-[1.02]"
             >
               <Plus size={18} /> Add item
             </button>
