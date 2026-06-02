@@ -11,6 +11,7 @@ import {
   Heart,
   WalletCards,
   Plus,
+  Bell,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -95,6 +96,7 @@ export default function HomePage() {
   const [plannerItems, setPlannerItems] = useState<PlannerItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [pushEnabled, setPushEnabled] = useState(false);
 
   const [contributionName, setContributionName] = useState("Jordan");
   const [contributionGoal, setContributionGoal] = useState("Rental Deposit");
@@ -115,6 +117,7 @@ export default function HomePage() {
   useEffect(() => {
     const savedUser = localStorage.getItem("activeUser");
     const savedJointMonthlyTarget = localStorage.getItem("jointMonthlyTarget");
+    const savedPushEnabled = localStorage.getItem("pushEnabled");
 
     if (savedUser) {
       setActiveUser(savedUser);
@@ -130,6 +133,10 @@ export default function HomePage() {
       setJointMonthlyTarget(Number(savedJointMonthlyTarget));
     }
 
+    if (savedPushEnabled === "true") {
+      setPushEnabled(true);
+    }
+
     const savedPlannerItems = localStorage.getItem("plannerItems");
 
     if (savedPlannerItems) {
@@ -139,6 +146,15 @@ export default function HomePage() {
     }
 
     loadData();
+
+    if (savedUser) {
+      setTimeout(() => {
+        sendNotification(
+          "Tracker opened",
+          `${savedUser} opened the home savings tracker.`
+        );
+      }, 1200);
+    }
   }, []);
 
   function chooseUser(name: string) {
@@ -150,6 +166,13 @@ export default function HomePage() {
     setTimeout(() => {
       setShowWelcome(false);
     }, 2200);
+
+    setTimeout(() => {
+      sendNotification(
+        "Tracker opened",
+        `${name} opened the home savings tracker.`
+      );
+    }, 1200);
   }
 
   function switchUser() {
@@ -285,8 +308,34 @@ export default function HomePage() {
       )
     );
 
+    const previousTotalTarget = savingsGoals.reduce((sum, goal) => sum + Number(goal.target), 0);
+    const previousTotalSaved = savingsGoals.reduce((sum, goal) => sum + Number(goal.saved), 0);
+    const previousProgress =
+      previousTotalTarget > 0 ? Math.floor((previousTotalSaved / previousTotalTarget) * 100) : 0;
+    const newProgress =
+      previousTotalTarget > 0 ? Math.floor(((previousTotalSaved + amount) / previousTotalTarget) * 100) : 0;
+
     setContributionAmount("");
     setMessage(`Added ${formatGBP(amount)} for ${contributionName}.`);
+
+    await sendNotification(
+      "Savings added",
+      `${contributionName} added ${formatGBP(amount)} towards ${contributionGoal}.`
+    );
+
+    const milestones = [25, 50, 75, 100];
+    const reachedMilestone = milestones.find(
+      (milestone) => previousProgress < milestone && newProgress >= milestone
+    );
+
+    if (reachedMilestone) {
+      await sendNotification(
+        "Milestone reached 🎉",
+        `You have reached ${reachedMilestone}% of your move-in savings target.`
+      );
+    }
+
+    await sendMotivation();
   }
 
   async function updateSavingsTarget(goal: SavingsGoal) {
@@ -345,6 +394,11 @@ export default function HomePage() {
     setPlannerItemName("");
     setPlannerItemEstimate("");
     setMessage(`${newItem.item} added to your planner.`);
+
+    sendNotification(
+      "New item added",
+      `${newItem.item} has been added to the ${newItem.category} planner.`
+    );
   }
 
   function deletePlannerItem(id: string) {
@@ -379,6 +433,8 @@ export default function HomePage() {
   async function deleteProperty(propertyId: string | undefined) {
     if (!propertyId) return;
 
+    const propertyToDelete = properties.find((property) => property.id === propertyId);
+
     const { error } = await supabase
       .from("properties")
       .delete()
@@ -394,7 +450,117 @@ export default function HomePage() {
     );
 
     setMessage("Property removed from watchlist.");
+
+    await sendNotification(
+      "Property removed",
+      `${propertyToDelete?.title || "A property"} has been removed from the watchlist.`
+    );
   }
+
+  function urlBase64ToUint8Array(base64String: string) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+
+  return Uint8Array.from(
+    [...rawData].map((char) => char.charCodeAt(0))
+  );
+}
+
+async function enablePushNotifications() {
+  if (!activeUser) {
+    setMessage("Choose Jordan or Dannie first.");
+    return;
+  }
+
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    setMessage("Push notifications are not supported on this browser.");
+    return;
+  }
+
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
+  if (!vapidPublicKey) {
+    setMessage("Missing NEXT_PUBLIC_VAPID_PUBLIC_KEY.");
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+
+  if (permission !== "granted") {
+    setMessage("Notifications were not enabled.");
+    return;
+  }
+
+  const registration = await navigator.serviceWorker.register("/sw.js");
+
+  const subscription =
+    (await registration.pushManager.getSubscription()) ||
+    (await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
+    }));
+
+  const response = await fetch("/api/subscribe", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      userName: activeUser,
+      subscription,
+    }),
+  });
+
+  if (!response.ok) {
+    setMessage("Could not save push subscription.");
+    return;
+  }
+
+  setPushEnabled(true);
+  localStorage.setItem("pushEnabled", "true");
+  setMessage("Push notifications enabled.");
+}
+
+async function sendNotification(title: string, body: string) {
+  try {
+    await fetch("/api/send-notification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title, body }),
+    });
+  } catch {
+    // Keeps the main app action working even if notifications fail.
+  }
+}
+
+async function sendMotivation() {
+  const messages = [
+    "Small steps every week get you closer to your own place.",
+    "Keep going — every pound saved gets you closer to moving in.",
+    "You and Dannie are building something together. Stay consistent.",
+    "Future you will be glad you kept saving today.",
+    "Every update is progress. Keep the momentum going.",
+  ];
+
+  const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+  await sendNotification("Keep going 💪", randomMessage);
+}
+
+async function sendTestNotification() {
+  await sendNotification(
+    "Test notification",
+    "Notifications are working for your home savings tracker."
+  );
+
+  setMessage("Test notification sent.");
+}
 
   async function addProperty() {
     const rent = Number(propertyRent);
@@ -454,6 +620,11 @@ export default function HomePage() {
     setPropertyImageUrl("");
 
     setMessage("Property added to your watchlist.");
+
+    await sendNotification(
+      "New property added",
+      `${propertyTitle} has been added to the Cornwall watchlist.`
+    );
   }
 
   return (
@@ -624,6 +795,40 @@ export default function HomePage() {
             </p>
           </div>
         </section>
+
+        <section className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
+  <div className="flex items-center gap-3">
+    <Bell className="text-emerald-300" />
+    <h2 className="text-xl font-bold">Push Notifications</h2>
+  </div>
+
+  <p className="mt-2 text-sm text-slate-400">
+    Enable reminders and shared updates when savings, properties, and planner items change.
+  </p>
+
+  <div className="mt-5 grid gap-3 sm:grid-cols-3">
+    <button
+      onClick={enablePushNotifications}
+      className="rounded-2xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:scale-[1.02]"
+    >
+      {pushEnabled ? "Notifications enabled" : "Enable notifications"}
+    </button>
+
+    <button
+      onClick={sendTestNotification}
+      className="rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-2.5 text-sm font-bold text-slate-200 transition hover:scale-[1.02] hover:border-white/20"
+    >
+      Send test
+    </button>
+
+    <button
+      onClick={sendMotivation}
+      className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 px-5 py-2.5 text-sm font-bold text-emerald-100 transition hover:scale-[1.02] hover:border-emerald-300/40"
+    >
+      Motivate us
+    </button>
+  </div>
+</section>
 
         <section className="rounded-3xl border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-xl">
           <h2 className="text-xl font-bold">Add Savings Contribution</h2>
