@@ -68,20 +68,53 @@ const starterPartners: Partner[] = [
 const starterProperties: Property[] = [];
 const starterPlannerItems: PlannerItem[] = [];
 
+const motivationalMessages = [
+  "Every pound saved is one step closer to your own front door.",
+  "You are not just saving money — you are building a future together.",
+  "Small consistent wins become life-changing progress.",
+  "The dream home starts with little deposits like this.",
+  "Keep going. Future Jordan and Dannie will thank you.",
+  "Another update, another step closer to moving in.",
+  "Your first home together is getting closer.",
+  "Consistency beats big bursts. You are doing this properly.",
+  "One day this tracker will be a memory of how it all started.",
+  "Saving together now means relaxing together later.",
+  "The little sacrifices now are building something beautiful.",
+  "Every update proves you are serious about the future.",
+  "You are building more than savings — you are building stability.",
+  "Keep showing up. The results will follow.",
+  "Imagine unlocking the door to your first place together.",
+  "This is what teamwork looks like.",
+  "Future cosy nights start with today’s savings.",
+  "Every goal filled is another piece of the home coming together.",
+  "Stay patient. The plan is working.",
+  "Love, planning, and consistency — that is the formula.",
+  "This is your shared journey, and every step counts.",
+  "You are closer than you were yesterday.",
+  "Keep pushing. The move-in day will be worth it.",
+  "Tiny progress is still progress.",
+  "Your home fund is growing because you are staying committed.",
+  "One contribution at a time, one room at a time, one dream at a time.",
+  "The sofa, the keys, the first food shop — it all starts here.",
+  "You two are turning a plan into real life.",
+  "Every saving update is a promise to your future selves.",
+  "Cornwall home loading… keep going.",
+];
+
 const cardClass =
-  "rounded-[2rem] border border-pink-200/20 bg-white/[0.10] shadow-2xl shadow-rose-950/30 backdrop-blur-2xl";
+  "rounded-[2.25rem] border border-fuchsia-200/20 bg-gradient-to-br from-white/[0.16] via-white/[0.08] to-pink-300/[0.06] shadow-2xl shadow-black/35 backdrop-blur-2xl ring-1 ring-white/10";
 
 const innerCardClass =
-  "rounded-3xl border border-pink-200/15 bg-white/[0.07] shadow-xl shadow-rose-950/20 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.11]";
+  "rounded-[2rem] border border-fuchsia-200/15 bg-gradient-to-br from-white/[0.12] via-white/[0.07] to-rose-300/[0.05] shadow-xl shadow-black/25 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-pink-200/30 hover:bg-white/[0.14] hover:shadow-2xl hover:shadow-pink-950/30";
 
 const inputClass =
-  "rounded-2xl border border-pink-200/15 bg-rose-950/55 px-4 py-2.5 text-sm text-white outline-none ring-pink-300/30 placeholder:text-pink-100/45 focus:ring-4";
+  "rounded-2xl border border-pink-200/15 bg-black/25 px-4 py-3 text-sm text-white outline-none ring-pink-300/30 placeholder:text-pink-100/45 focus:border-pink-200/35 focus:ring-4";
 
 const primaryButtonClass =
-  "inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-200 via-rose-300 to-red-300 px-5 py-2.5 text-sm font-black text-rose-950 shadow-[0_0_25px_rgba(244,114,182,0.35)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_40px_rgba(244,114,182,0.55)]";
+  "inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300 px-5 py-3 text-sm font-black text-rose-950 shadow-[0_0_30px_rgba(244,114,182,0.38)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_0_48px_rgba(244,114,182,0.62)]";
 
 const softButtonClass =
-  "rounded-2xl border border-pink-200/20 bg-white/[0.08] px-5 py-2.5 text-sm font-bold text-pink-50 shadow-lg shadow-rose-950/20 transition-all duration-300 hover:scale-[1.03] hover:bg-white/[0.14]";
+  "rounded-2xl border border-pink-200/20 bg-white/[0.10] px-5 py-3 text-sm font-bold text-pink-50 shadow-lg shadow-black/20 transition-all duration-300 hover:scale-[1.03] hover:border-pink-100/30 hover:bg-white/[0.16]";
 
 function formatGBP(value: number) {
   return new Intl.NumberFormat("en-GB", {
@@ -292,7 +325,7 @@ export default function HomePage() {
     0
   );
 
-  function saveJointMonthlyTarget() {
+  async function saveJointMonthlyTarget() {
     const target = Number(jointMonthlyTargetInput);
 
     if (!target || target <= 0) {
@@ -304,6 +337,13 @@ export default function HomePage() {
     localStorage.setItem("jointMonthlyTarget", String(target));
     setJointMonthlyTargetInput("");
     setMessage(`Joint monthly target updated to ${formatGBP(target)}.`);
+
+    await sendNotification(
+      "Monthly target updated 💕",
+      `${activeUser || "Someone"} set your joint monthly saving target to ${formatGBP(target)}.`
+    );
+
+    await sendMotivation();
   }
 
   async function addContribution() {
@@ -442,6 +482,11 @@ export default function HomePage() {
 
     setEditingTargets((current) => ({ ...current, [editKey]: "" }));
     setMessage(`${goal.name} target updated to ${formatGBP(newTarget)}.`);
+
+    await sendNotification(
+      "Savings pot target updated",
+      `${goal.name} now has a target of ${formatGBP(newTarget)}.`
+    );
   }
 
   function addPlannerItem() {
@@ -469,16 +514,24 @@ export default function HomePage() {
     setMessage(`${newItem.item} added to your planner.`);
 
     sendNotification(
-      "New item added",
+      "New home item added 🛋️",
       `${newItem.item} has been added to the ${newItem.category} planner.`
     );
+
+    sendMotivation();
   }
 
-  function deletePlannerItem(id: string) {
+  async function deletePlannerItem(id: string) {
+    const itemToDelete = plannerItems.find((item) => item.id === id);
     const updatedItems = plannerItems.filter((item) => item.id !== id);
     setPlannerItems(updatedItems);
     localStorage.setItem("plannerItems", JSON.stringify(updatedItems));
     setMessage("Planner item removed.");
+
+    await sendNotification(
+      "Planner item removed",
+      `${itemToDelete?.item || "An item"} has been removed from your home planner.`
+    );
   }
 
   async function updatePropertyStatus(
@@ -486,6 +539,8 @@ export default function HomePage() {
     status: string
   ) {
     if (!propertyId) return;
+
+    const propertyToUpdate = properties.find((property) => property.id === propertyId);
 
     const { error } = await supabase
       .from("properties")
@@ -504,6 +559,11 @@ export default function HomePage() {
     );
 
     setMessage("Property status updated.");
+
+    await sendNotification(
+      "Property status changed 🏡",
+      `${propertyToUpdate?.title || "A property"} is now marked as ${status}.`
+    );
   }
 
   async function deleteProperty(propertyId: string | undefined) {
@@ -619,29 +679,11 @@ export default function HomePage() {
   }
 
   async function sendMotivation() {
-    const messages = [
-      "Small steps every week get you closer to your own place.",
-      "Keep going — every pound saved gets you closer to moving in.",
-      "You and Dannie are building something together. Stay consistent.",
-      "Future you will be glad you kept saving today.",
-      "Every update is progress. Keep the momentum going.",
-      "Love, plans, and consistency — that is how the dream becomes real.",
-    ];
+  const randomMessage =
+    motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
 
-    const randomMessage =
-      messages[Math.floor(Math.random() * messages.length)];
-
-    await sendNotification("Keep going 💪", randomMessage);
-  }
-
-  async function sendTestNotification() {
-    await sendNotification(
-      "Test notification",
-      "Notifications are working for your home savings tracker."
-    );
-
-    setMessage("Test notification sent.");
-  }
+  await sendNotification("Keep going 💖", randomMessage);
+}
 
   async function addProperty() {
     const rent = Number(propertyRent);
@@ -700,15 +742,18 @@ export default function HomePage() {
     setMessage("Property added to your watchlist.");
 
     await sendNotification(
-      "New property added",
-      `${propertyTitle} has been added to the Cornwall watchlist.`
+      "New property added 🏡",
+      `${propertyTitle} in ${propertyLocation} has been added to the Cornwall watchlist. Rent: ${formatGBP(rent)}. Deposit: ${formatGBP(deposit)}.`
     );
+
+    await sendMotivation();
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#2a0614] p-4 text-white sm:p-6">
-      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(251,113,133,0.45),transparent_30%),radial-gradient(circle_at_top_right,rgba(244,114,182,0.35),transparent_28%),radial-gradient(circle_at_bottom,rgba(190,24,93,0.38),transparent_42%),linear-gradient(135deg,#2a0614_0%,#5f1232_42%,#9f1239_100%)]" />
-      <div className="fixed left-1/2 top-0 -z-10 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-pink-300/20 blur-3xl" />
+    <main className="min-h-screen overflow-hidden bg-[#14000b] p-4 text-white sm:p-6">
+      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.40),transparent_28%),radial-gradient(circle_at_top_right,rgba(251,113,133,0.34),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.22),transparent_36%),radial-gradient(circle_at_bottom,rgba(190,24,93,0.35),transparent_45%),linear-gradient(135deg,#14000b_0%,#3b0820_38%,#831843_72%,#be123c_100%)]" />
+      <div className="fixed left-1/2 top-0 -z-10 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-fuchsia-300/20 blur-3xl" />
+      <div className="fixed right-10 top-1/3 -z-10 h-72 w-72 rounded-full bg-rose-400/15 blur-3xl" />
       <div className="pointer-events-none fixed left-8 top-24 -z-10 text-8xl text-pink-200/10">
         ❤
       </div>
@@ -783,14 +828,14 @@ export default function HomePage() {
           <div className="flex flex-col justify-between gap-8 md:flex-row md:items-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-pink-200/25 bg-pink-200/10 px-4 py-2 text-sm font-bold text-pink-50">
-                <Heart size={16} fill="currentColor" /> Jordan & Dannie’s future home
+                <Heart size={16} fill="currentColor" /> Jordan & Dannie’s love nest
               </div>
               <h1 className="mt-5 max-w-4xl bg-gradient-to-r from-pink-100 via-white to-rose-100 bg-clip-text text-4xl font-black tracking-tight text-transparent md:text-6xl">
-                Building Our First Home Together
+                Our Dream Home Fund
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-pink-50/70">
-                A shared place to track savings, Cornwall rentals, furniture,
-                appliances, and every little step towards moving in together.
+                A beautiful shared tracker for savings, Cornwall rentals, furniture,
+                appliances, reminders, and every step towards your future home.
               </p>
             </div>
 
@@ -925,20 +970,16 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <button onClick={enablePushNotifications} className={primaryButtonClass}>
               {pushEnabled ? "Notifications enabled" : "Enable notifications"}
             </button>
 
-            <button onClick={sendTestNotification} className={softButtonClass}>
-              Send test
-            </button>
-
             <button
               onClick={sendMotivation}
-              className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-5 py-2.5 text-sm font-bold text-pink-50 transition-all duration-300 hover:scale-[1.03] hover:bg-pink-200/15"
+              className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-5 py-3 text-sm font-bold text-pink-50 transition-all duration-300 hover:scale-[1.03] hover:bg-pink-200/15"
             >
-              Motivate us
+              Send motivation
             </button>
           </div>
         </section>
@@ -1041,7 +1082,7 @@ export default function HomePage() {
           </div>
 
           <div className={`${cardClass} p-6`}>
-            <h2 className="text-xl font-black">Add Property</h2>
+            <h2 className="text-xl font-black">Add Property Listing</h2>
             <div className="mt-4 grid gap-3">
               <input
                 value={propertyTitle}
@@ -1093,7 +1134,7 @@ export default function HomePage() {
         </section>
 
         <section id="properties" className={`${cardClass} p-6`}>
-          <h2 className="text-xl font-black">Cornwall Property Watchlist</h2>
+          <h2 className="text-xl font-black">Cornwall Love Nest Watchlist</h2>
           <div className="mt-5 grid gap-5 lg:grid-cols-2">
             {properties.length === 0 && (
               <div className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-5 text-sm text-pink-50/60 lg:col-span-2">
