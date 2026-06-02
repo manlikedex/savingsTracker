@@ -15,6 +15,12 @@ import {
   Building2,
   Sparkles,
   Trash2,
+  CalendarDays,
+  Trophy,
+  Flame,
+  BarChart3,
+  Target,
+  Star,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -68,53 +74,23 @@ const starterPartners: Partner[] = [
 const starterProperties: Property[] = [];
 const starterPlannerItems: PlannerItem[] = [];
 
-const motivationalMessages = [
-  "Every pound saved is one step closer to your own front door.",
-  "You are not just saving money — you are building a future together.",
-  "Small consistent wins become life-changing progress.",
-  "The dream home starts with little deposits like this.",
-  "Keep going. Future Jordan and Dannie will thank you.",
-  "Another update, another step closer to moving in.",
-  "Your first home together is getting closer.",
-  "Consistency beats big bursts. You are doing this properly.",
-  "One day this tracker will be a memory of how it all started.",
-  "Saving together now means relaxing together later.",
-  "The little sacrifices now are building something beautiful.",
-  "Every update proves you are serious about the future.",
-  "You are building more than savings — you are building stability.",
-  "Keep showing up. The results will follow.",
-  "Imagine unlocking the door to your first place together.",
-  "This is what teamwork looks like.",
-  "Future cosy nights start with today’s savings.",
-  "Every goal filled is another piece of the home coming together.",
-  "Stay patient. The plan is working.",
-  "Love, planning, and consistency — that is the formula.",
-  "This is your shared journey, and every step counts.",
-  "You are closer than you were yesterday.",
-  "Keep pushing. The move-in day will be worth it.",
-  "Tiny progress is still progress.",
-  "Your home fund is growing because you are staying committed.",
-  "One contribution at a time, one room at a time, one dream at a time.",
-  "The sofa, the keys, the first food shop — it all starts here.",
-  "You two are turning a plan into real life.",
-  "Every saving update is a promise to your future selves.",
-  "Cornwall home loading… keep going.",
-];
-
 const cardClass =
-  "relative overflow-hidden rounded-[2.25rem] border border-fuchsia-200/30 bg-gradient-to-br from-white/[0.18] via-fuchsia-200/[0.10] to-rose-300/[0.08] shadow-2xl shadow-black/35 backdrop-blur-2xl ring-1 ring-white/10 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-fuchsia-200/25 before:content-[''] before:animate-pulse";
+  "relative overflow-hidden rounded-[2rem] border border-fuchsia-200/30 bg-white/[0.13] shadow-2xl shadow-fuchsia-950/30 backdrop-blur-2xl transition-all duration-500 hover:-translate-y-1 hover:border-pink-200/60 hover:shadow-[0_0_45px_rgba(244,114,182,0.35)]";
 
 const innerCardClass =
-  "relative overflow-hidden rounded-[2rem] border border-fuchsia-200/25 bg-gradient-to-br from-white/[0.14] via-pink-200/[0.08] to-purple-300/[0.06] shadow-xl shadow-black/25 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-fuchsia-100/50 hover:bg-white/[0.18] hover:shadow-2xl hover:shadow-fuchsia-950/30 before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-fuchsia-200/20 before:content-[''] before:animate-pulse";
+  "relative overflow-hidden rounded-3xl border border-fuchsia-200/25 bg-white/[0.10] shadow-xl shadow-fuchsia-950/20 backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-pink-200/60 hover:bg-white/[0.16] hover:shadow-[0_0_35px_rgba(244,114,182,0.28)]";
 
 const inputClass =
-  "rounded-2xl border border-fuchsia-200/20 bg-black/25 px-4 py-3 text-sm text-white outline-none ring-fuchsia-300/30 placeholder:text-fuchsia-100/50 transition-all duration-300 focus:border-fuchsia-100/50 focus:bg-black/35 focus:ring-4";
+  "rounded-2xl border border-fuchsia-200/25 bg-rose-950/60 px-4 py-2.5 text-sm text-white outline-none ring-fuchsia-300/30 placeholder:text-pink-100/45 focus:border-pink-200/60 focus:ring-4";
 
 const primaryButtonClass =
-  "inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300 px-5 py-3 text-sm font-black text-rose-950 shadow-[0_0_30px_rgba(244,114,182,0.45)] transition-all duration-300 hover:scale-[1.04] hover:from-fuchsia-100 hover:via-pink-200 hover:to-rose-200 hover:shadow-[0_0_55px_rgba(244,114,182,0.75)] active:scale-[0.98]";
+  "inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300 px-5 py-2.5 text-sm font-black text-rose-950 shadow-[0_0_28px_rgba(244,114,182,0.45)] transition-all duration-300 hover:scale-[1.04] hover:shadow-[0_0_48px_rgba(244,114,182,0.75)]";
 
 const softButtonClass =
-  "rounded-2xl border border-fuchsia-200/25 bg-white/[0.11] px-5 py-3 text-sm font-bold text-pink-50 shadow-lg shadow-black/20 transition-all duration-300 hover:scale-[1.03] hover:border-fuchsia-100/50 hover:bg-white/[0.18] hover:shadow-[0_0_30px_rgba(217,70,239,0.25)]";
+  "rounded-2xl border border-fuchsia-200/25 bg-white/[0.10] px-5 py-2.5 text-sm font-bold text-pink-50 shadow-lg shadow-fuchsia-950/20 transition-all duration-300 hover:scale-[1.03] hover:border-pink-200/60 hover:bg-white/[0.18]";
+
+const glowLineClass =
+  "pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-200/80 to-transparent opacity-70";
 
 function formatGBP(value: number) {
   return new Intl.NumberFormat("en-GB", {
@@ -128,7 +104,7 @@ function ProgressBar({ value }: { value: number }) {
   return (
     <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
       <div
-        className="h-3 rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300 shadow-[0_0_22px_rgba(251,113,133,0.55)] transition-all duration-500"
+        className="h-3 rounded-full bg-gradient-to-r from-pink-200 via-rose-300 to-red-300 shadow-[0_0_22px_rgba(251,113,133,0.55)] transition-all duration-500"
         style={{ width: `${Math.min(value, 100)}%` }}
       />
     </div>
@@ -138,18 +114,47 @@ function ProgressBar({ value }: { value: number }) {
 function statusClass(status: string) {
   switch (status) {
     case "Interested":
-      return "border-pink-300/30 bg-fuchsia-300/15 text-fuchsia-100";
+      return "border-pink-300/40 bg-pink-300/20 text-pink-50";
     case "Viewing Booked":
-      return "border-purple-300/30 bg-purple-300/15 text-purple-100";
+      return "border-purple-300/40 bg-purple-300/20 text-purple-50";
     case "Applied":
-      return "border-emerald-300/30 bg-emerald-300/15 text-emerald-100";
+      return "border-emerald-300/40 bg-emerald-300/20 text-emerald-50";
     case "Rejected":
-      return "border-red-300/30 bg-red-300/15 text-red-100";
+      return "border-red-300/40 bg-red-300/20 text-red-50";
     case "No Longer Interested":
-      return "border-slate-300/20 bg-slate-300/10 text-slate-200";
+      return "border-slate-300/25 bg-slate-300/10 text-slate-100";
     default:
-      return "border-rose-300/30 bg-rose-300/15 text-rose-100";
+      return "border-rose-300/40 bg-rose-300/20 text-rose-50";
   }
+}
+
+function getPropertyScore(property: Property) {
+  let score = 35;
+
+  if (property.image_url) score += 15;
+  if (property.link) score += 10;
+  if (property.rent > 0 && property.rent <= 900) score += 20;
+  if (property.rent > 900 && property.rent <= 1200) score += 14;
+  if (property.deposit > 0 && property.deposit <= property.rent * 1.2) score += 10;
+
+  if (property.status === "Interested") score += 8;
+  if (property.status === "Viewing Booked") score += 15;
+  if (property.status === "Applied") score += 20;
+  if (property.status === "Rejected" || property.status === "No Longer Interested") score -= 25;
+
+  return Math.max(0, Math.min(score, 100));
+}
+
+function formatFutureMonth(monthsFromNow: number) {
+  if (!monthsFromNow || monthsFromNow <= 0) return "Set monthly target";
+
+  const date = new Date();
+  date.setMonth(date.getMonth() + monthsFromNow);
+
+  return new Intl.DateTimeFormat("en-GB", {
+    month: "long",
+    year: "numeric",
+  }).format(date);
 }
 
 export default function HomePage() {
@@ -165,6 +170,7 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [pushEnabled, setPushEnabled] = useState(false);
+  const [savingsStreak, setSavingsStreak] = useState(0);
 
   const [contributionName, setContributionName] = useState("Jordan");
   const [contributionGoal, setContributionGoal] = useState("Rental Deposit");
@@ -189,6 +195,7 @@ export default function HomePage() {
     const savedJointMonthlyTarget = localStorage.getItem("jointMonthlyTarget");
     const savedPushEnabled = localStorage.getItem("pushEnabled");
     const savedPlannerItems = localStorage.getItem("plannerItems");
+    const savedSavingsStreak = localStorage.getItem("savingsStreak");
 
     if (savedUser) {
       setActiveUser(savedUser);
@@ -206,6 +213,10 @@ export default function HomePage() {
 
     if (savedPushEnabled === "true") {
       setPushEnabled(true);
+    }
+
+    if (savedSavingsStreak) {
+      setSavingsStreak(Number(savedSavingsStreak));
     }
 
     if (savedPlannerItems) {
@@ -325,7 +336,50 @@ export default function HomePage() {
     0
   );
 
-  async function saveJointMonthlyTarget() {
+  const predictedMoveInDate = formatFutureMonth(totals.monthsToGoal);
+  const bestProperty = properties.length > 0
+    ? properties.reduce((best, property) =>
+        getPropertyScore(property) > getPropertyScore(best) ? property : best
+      )
+    : null;
+  const monthlyProjection = Array.from({ length: 6 }, (_, index) => ({
+    month: index === 0 ? "Now" : `M${index}`,
+    amount: totals.totalSaved + jointMonthlyTarget * index,
+  }));
+  const maxProjection = Math.max(...monthlyProjection.map((item) => item.amount), 1);
+  const achievements = [
+    { title: "First saving", detail: "Add your first contribution", unlocked: totals.totalSaved > 0, icon: PiggyBank },
+    { title: "Monthly plan", detail: "Set a joint monthly target", unlocked: jointMonthlyTarget > 0, icon: Target },
+    { title: "Home hunters", detail: "Add a property listing", unlocked: properties.length > 0, icon: Building2 },
+    { title: "Nest builders", detail: "Add 3 planner items", unlocked: plannerItems.length >= 3, icon: Sofa },
+    { title: "Halfway home", detail: "Reach 50% progress", unlocked: totals.progress >= 50, icon: Trophy },
+    { title: "Savings streak", detail: "Keep saving consistently", unlocked: savingsStreak > 0, icon: Flame },
+  ];
+
+  function updateSavingsStreak() {
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const lastSavedDate = localStorage.getItem("lastSavingsDate");
+    const currentStreak = Number(localStorage.getItem("savingsStreak") || "0");
+
+    let nextStreak = currentStreak;
+
+    if (lastSavedDate === today) {
+      nextStreak = Math.max(currentStreak, 1);
+    } else if (lastSavedDate === yesterday) {
+      nextStreak = currentStreak + 1;
+    } else {
+      nextStreak = 1;
+    }
+
+    localStorage.setItem("lastSavingsDate", today);
+    localStorage.setItem("savingsStreak", String(nextStreak));
+    setSavingsStreak(nextStreak);
+
+    return nextStreak;
+  }
+
+  function saveJointMonthlyTarget() {
     const target = Number(jointMonthlyTargetInput);
 
     if (!target || target <= 0) {
@@ -338,12 +392,11 @@ export default function HomePage() {
     setJointMonthlyTargetInput("");
     setMessage(`Joint monthly target updated to ${formatGBP(target)}.`);
 
-    await sendNotification(
-      "Monthly target updated 💕",
-      `${activeUser || "Someone"} set your joint monthly saving target to ${formatGBP(target)}.`
+    sendNotification(
+      "Monthly target updated",
+      `Jordan and Dannie's joint monthly saving target is now ${formatGBP(target)}.`
     );
-
-    await sendMotivation();
+    sendMotivation();
   }
 
   async function addContribution() {
@@ -428,6 +481,8 @@ export default function HomePage() {
           )
         : 0;
 
+    const nextStreak = updateSavingsStreak();
+
     setContributionAmount("");
     setMessage(`Added ${formatGBP(amount)} for ${contributionName}.`);
 
@@ -445,6 +500,13 @@ export default function HomePage() {
       await sendNotification(
         "Milestone reached 🎉",
         `You have reached ${reachedMilestone}% of your move-in savings target.`
+      );
+    }
+
+    if (nextStreak >= 2) {
+      await sendNotification(
+        "Savings streak 🔥",
+        `You're on a ${nextStreak}-day savings streak. Keep the home dream moving.`
       );
     }
 
@@ -485,7 +547,7 @@ export default function HomePage() {
 
     await sendNotification(
       "Savings pot target updated",
-      `${goal.name} now has a target of ${formatGBP(newTarget)}.`
+      `${goal.name} target is now ${formatGBP(newTarget)}.`
     );
   }
 
@@ -514,24 +576,24 @@ export default function HomePage() {
     setMessage(`${newItem.item} added to your planner.`);
 
     sendNotification(
-      "New home item added 🛋️",
+      "New item added",
       `${newItem.item} has been added to the ${newItem.category} planner.`
     );
-
-    sendMotivation();
   }
 
-  async function deletePlannerItem(id: string) {
-    const itemToDelete = plannerItems.find((item) => item.id === id);
+  function deletePlannerItem(id: string) {
+    const removedItem = plannerItems.find((item) => item.id === id);
     const updatedItems = plannerItems.filter((item) => item.id !== id);
     setPlannerItems(updatedItems);
     localStorage.setItem("plannerItems", JSON.stringify(updatedItems));
     setMessage("Planner item removed.");
 
-    await sendNotification(
-      "Planner item removed",
-      `${itemToDelete?.item || "An item"} has been removed from your home planner.`
-    );
+    if (removedItem) {
+      sendNotification(
+        "Planner item removed",
+        `${removedItem.item} has been removed from the move-in planner.`
+      );
+    }
   }
 
   async function updatePropertyStatus(
@@ -539,8 +601,6 @@ export default function HomePage() {
     status: string
   ) {
     if (!propertyId) return;
-
-    const propertyToUpdate = properties.find((property) => property.id === propertyId);
 
     const { error } = await supabase
       .from("properties")
@@ -560,9 +620,10 @@ export default function HomePage() {
 
     setMessage("Property status updated.");
 
+    const changedProperty = properties.find((property) => property.id === propertyId);
     await sendNotification(
-      "Property status changed 🏡",
-      `${propertyToUpdate?.title || "A property"} is now marked as ${status}.`
+      "Property status updated",
+      `${changedProperty?.title || "A property"} is now marked as ${status}.`
     );
   }
 
@@ -679,11 +740,39 @@ export default function HomePage() {
   }
 
   async function sendMotivation() {
-  const randomMessage =
-    motivationalMessages[Math.floor(Math.random() * motivationalMessages.length)];
+    const messages = [
+      "Small steps every week get you closer to your own place.",
+      "Keep going — every pound saved gets you closer to moving in.",
+      "You and Dannie are building something together. Stay consistent.",
+      "Future you will be glad you kept saving today.",
+      "Every update is progress. Keep the momentum going.",
+      "Love, plans, and consistency — that is how the dream becomes real.",
+      "Your first home starts with one smart choice at a time.",
+      "Every contribution is another brick in your future home.",
+      "You are not just saving money — you are building a life together.",
+      "Tiny deposits become big milestones when you keep showing up.",
+      "One day this tracker will be a memory from before you moved in.",
+      "The sofa, the keys, the first takeaway on the floor — keep going.",
+      "Cornwall move-in mission is still alive. Stay focused.",
+      "Your future home is getting closer than it feels today.",
+      "Consistency beats big one-off saves. Keep the rhythm going.",
+      "You two have a plan. That already puts you ahead.",
+      "Another step closer to unlocking the front door together.",
+      "Keep saving now so moving day feels lighter later.",
+      "The little wins count. Log them and celebrate them.",
+      "Future Jordan and Dannie are going to thank you for this.",
+      "One shared goal. One future home. Keep pushing.",
+      "Every pound has a purpose now.",
+      "The dream is not far away — it just needs consistency.",
+      "You are turning a plan into a place.",
+    ];
 
-  await sendNotification("Keep going 💖", randomMessage);
-}
+    const randomMessage =
+      messages[Math.floor(Math.random() * messages.length)];
+
+    await sendNotification("Keep going 💪", randomMessage);
+    setMessage("Motivation sent.");
+  }
 
   async function addProperty() {
     const rent = Number(propertyRent);
@@ -742,18 +831,16 @@ export default function HomePage() {
     setMessage("Property added to your watchlist.");
 
     await sendNotification(
-      "New property added 🏡",
-      `${propertyTitle} in ${propertyLocation} has been added to the Cornwall watchlist. Rent: ${formatGBP(rent)}. Deposit: ${formatGBP(deposit)}.`
+      "New property added",
+      `${propertyTitle} has been added to the Cornwall watchlist at ${formatGBP(rent)} per month.`
     );
-
     await sendMotivation();
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[#14000b] p-4 text-white sm:p-6">
-      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.40),transparent_28%),radial-gradient(circle_at_top_right,rgba(251,113,133,0.34),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.22),transparent_36%),radial-gradient(circle_at_bottom,rgba(190,24,93,0.35),transparent_45%),linear-gradient(135deg,#14000b_0%,#3b0820_38%,#831843_72%,#be123c_100%)]" />
-      <div className="fixed left-1/2 top-0 -z-10 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-fuchsia-300/20 blur-3xl" />
-      <div className="fixed right-10 top-1/3 -z-10 h-72 w-72 rounded-full bg-rose-400/15 blur-3xl" />
+    <main className="min-h-screen overflow-hidden bg-[#21001f] p-4 text-white sm:p-6">
+      <div className="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.55),transparent_30%),radial-gradient(circle_at_top_right,rgba(217,70,239,0.36),transparent_28%),radial-gradient(circle_at_bottom,rgba(251,113,133,0.42),transparent_42%),linear-gradient(135deg,#21001f_0%,#701a75_40%,#e11d48_100%)]" />
+      <div className="fixed left-1/2 top-0 -z-10 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-pink-300/20 blur-3xl" />
       <div className="pointer-events-none fixed left-8 top-24 -z-10 text-8xl text-pink-200/10">
         ❤
       </div>
@@ -763,9 +850,9 @@ export default function HomePage() {
 
       {!activeUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-rose-950/80 p-6 backdrop-blur-2xl">
-          <div className="relative w-full max-w-md overflow-hidden rounded-[2.25rem] border border-fuchsia-200/25 bg-white/[0.11] p-7 text-center shadow-2xl shadow-rose-950/50 backdrop-blur-2xl">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300" />
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-gradient-to-br from-fuchsia-200 via-pink-300 to-rose-300 text-rose-950 shadow-[0_0_35px_rgba(244,114,182,0.45)]">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[2.25rem] border border-pink-200/20 bg-white/[0.11] p-7 text-center shadow-2xl shadow-rose-950/50 backdrop-blur-2xl">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-gradient-to-br from-pink-200 via-rose-300 to-red-300 text-rose-950 shadow-[0_0_35px_rgba(244,114,182,0.45)]">
               <Heart size={30} fill="currentColor" />
             </div>
             <h2 className="mt-5 text-3xl font-black tracking-tight">
@@ -799,17 +886,17 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(251,113,133,0.32),transparent_28%),radial-gradient(circle_at_bottom,rgba(244,114,182,0.25),transparent_35%)]" />
           <div className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-pink-300/20 blur-3xl" />
 
-          <div className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-fuchsia-200/25 bg-white/[0.11] p-8 text-center shadow-2xl shadow-rose-950/60 backdrop-blur-2xl">
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300" />
+          <div className="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-pink-200/20 bg-white/[0.11] p-8 text-center shadow-2xl shadow-rose-950/60 backdrop-blur-2xl">
+            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
 
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-fuchsia-200 via-pink-300 to-rose-300 text-rose-950 shadow-[0_0_45px_rgba(244,114,182,0.45)]">
+            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-[2rem] bg-gradient-to-br from-pink-200 via-rose-300 to-red-300 text-rose-950 shadow-[0_0_45px_rgba(244,114,182,0.45)]">
               <Heart size={42} fill="currentColor" />
             </div>
 
-            <p className="mt-7 text-sm font-bold uppercase tracking-[0.35em] text-fuchsia-100/80">
+            <p className="mt-7 text-sm font-bold uppercase tracking-[0.35em] text-pink-100/80">
               Welcome back
             </p>
-            <h2 className="mt-3 bg-gradient-to-r from-fuchsia-100 via-white to-pink-100 bg-clip-text text-6xl font-black tracking-tight text-transparent">
+            <h2 className="mt-3 bg-gradient-to-r from-pink-100 via-white to-rose-100 bg-clip-text text-6xl font-black tracking-tight text-transparent">
               {activeUser}
             </h2>
             <p className="mx-auto mt-4 max-w-sm text-sm leading-6 text-pink-50/70">
@@ -817,7 +904,7 @@ export default function HomePage() {
             </p>
 
             <div className="mx-auto mt-7 h-2 w-44 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-fuchsia-200 via-pink-300 to-rose-300" />
+              <div className="h-full w-full animate-pulse rounded-full bg-gradient-to-r from-pink-200 via-rose-300 to-red-300" />
             </div>
           </div>
         </div>
@@ -828,14 +915,14 @@ export default function HomePage() {
           <div className="flex flex-col justify-between gap-8 md:flex-row md:items-center">
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-pink-200/25 bg-pink-200/10 px-4 py-2 text-sm font-bold text-pink-50">
-                <Heart size={16} fill="currentColor" /> Jordan & Dannie’s love nest
+                <Heart size={16} fill="currentColor" /> Jordan & Dannie’s future home
               </div>
-              <h1 className="mt-5 max-w-4xl bg-gradient-to-r from-fuchsia-100 via-white to-pink-100 bg-clip-text text-4xl font-black tracking-tight text-transparent md:text-6xl">
-                Our Dream Home Fund
+              <h1 className="mt-5 max-w-4xl bg-gradient-to-r from-pink-100 via-white to-rose-100 bg-clip-text text-4xl font-black tracking-tight text-transparent md:text-6xl">
+                Building Our First Home Together
               </h1>
               <p className="mt-4 max-w-2xl text-base leading-7 text-pink-50/70">
-                A beautiful shared tracker for savings, Cornwall rentals, furniture,
-                appliances, reminders, and every step towards your future home.
+                A shared place to track savings, Cornwall rentals, furniture,
+                appliances, and every little step towards moving in together.
               </p>
             </div>
 
@@ -846,45 +933,27 @@ export default function HomePage() {
         </header>
 
         {(isLoading || message) && (
-          <div className="rounded-3xl border border-fuchsia-200/25 bg-white/[0.10] p-4 text-sm font-medium text-pink-50 shadow-xl shadow-rose-950/20 backdrop-blur-xl">
+          <div className="rounded-3xl border border-pink-200/20 bg-white/[0.10] p-4 text-sm font-medium text-pink-50 shadow-xl shadow-rose-950/20 backdrop-blur-xl">
             {isLoading ? "Loading your saved data..." : message}
           </div>
         )}
 
-        <section className={`${cardClass} p-4`}>
-          <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-6">
-            {[
-              ["#overview", "Overview"],
-              ["#savings", "Savings"],
-              ["#pots", "Pots"],
-              ["#properties", "Properties"],
-              ["#planner", "Planner"],
-              ["#notifications", "Alerts"],
-            ].map(([href, label]) => (
-              <a
-                key={href}
-                href={href}
-                className="rounded-2xl border border-fuchsia-200/20 bg-white/[0.08] px-4 py-3 text-center text-sm font-black text-pink-50/80 transition-all duration-300 hover:-translate-y-0.5 hover:border-fuchsia-100/50 hover:bg-white/[0.16] hover:text-white hover:shadow-[0_0_24px_rgba(217,70,239,0.25)]"
-              >
-                {label}
-              </a>
-            ))}
+        <nav className="sticky top-3 z-30 rounded-[1.5rem] border border-fuchsia-200/25 bg-rose-950/70 p-2 shadow-2xl shadow-fuchsia-950/35 backdrop-blur-2xl">
+          <div className="grid grid-cols-3 gap-1 text-center text-xs font-black text-pink-50/75 sm:grid-cols-6">
+            <a href="#overview" className="rounded-2xl px-3 py-2 transition hover:bg-white/12 hover:text-white">Overview</a>
+            <a href="#savings" className="rounded-2xl px-3 py-2 transition hover:bg-white/12 hover:text-white">Savings</a>
+            <a href="#properties" className="rounded-2xl px-3 py-2 transition hover:bg-white/12 hover:text-white">Properties</a>
+            <a href="#planner" className="rounded-2xl px-3 py-2 transition hover:bg-white/12 hover:text-white">Planner</a>
+            <a href="#insights" className="rounded-2xl px-3 py-2 transition hover:bg-white/12 hover:text-white">Insights</a>
+            <a href="#achievements" className="rounded-2xl px-3 py-2 transition hover:bg-white/12 hover:text-white">Wins</a>
           </div>
-        </section>
-
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 01</p>
-            <h2 className="mt-2 text-2xl font-black md:text-3xl">Overview</h2>
-          </div>
-          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
-        </div>
+        </nav>
 
         <section id="overview" className="grid gap-4 md:grid-cols-4">
           <div className={`${innerCardClass} p-5`}>
             <div className="flex items-center gap-3 text-pink-50/75">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-300/15">
-                <PiggyBank className="text-fuchsia-100" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-300/15">
+                <PiggyBank className="text-pink-100" />
               </div>
               <p className="font-bold">Saved so far</p>
             </div>
@@ -944,14 +1013,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 02</p>
-            <h2 className="mt-2 text-2xl font-black md:text-3xl">Monthly plan</h2>
-          </div>
-          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
-        </div>
-
         <section id="monthly" className="grid gap-6 lg:grid-cols-3">
           <div className={`${cardClass} p-6 lg:col-span-2`}>
             <div className="flex items-center justify-between gap-4">
@@ -963,8 +1024,8 @@ export default function HomePage() {
                   {formatGBP(jointMonthlyTarget)}
                 </h2>
               </div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-fuchsia-300/15">
-                <WalletCards className="text-fuchsia-100" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-pink-300/15">
+                <WalletCards className="text-pink-100" />
               </div>
             </div>
 
@@ -994,18 +1055,89 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 06</p>
-            <h2 className="mt-2 text-2xl font-black md:text-3xl">Alerts & motivation</h2>
-          </div>
-          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
-        </div>
 
-        <section id="notifications" className={`${cardClass} p-6`}>
+        <section id="insights" className="grid gap-6 lg:grid-cols-3">
+          <div className={`${cardClass} p-6`}>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-300/15">
+                <CalendarDays className="text-fuchsia-100" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-pink-50/55">Predicted move-in</p>
+                <h2 className="mt-1 text-2xl font-black">{predictedMoveInDate}</h2>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-pink-50/60">
+              Based on your current remaining amount and monthly target.
+            </p>
+          </div>
+
+          <div className={`${cardClass} p-6`}>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-300/15">
+                <Flame className="text-orange-100" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-pink-50/55">Savings streak</p>
+                <h2 className="mt-1 text-2xl font-black">{savingsStreak} days</h2>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-pink-50/60">
+              Add savings on consecutive days to build the streak.
+            </p>
+          </div>
+
+          <div className={`${cardClass} p-6`}>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-300/15">
+                <Star className="text-yellow-100" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-pink-50/55">Best property score</p>
+                <h2 className="mt-1 text-2xl font-black">
+                  {bestProperty ? `${getPropertyScore(bestProperty)} / 100` : "Add property"}
+                </h2>
+              </div>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-pink-50/60">
+              {bestProperty ? bestProperty.title : "Scores improve with images, links, status and affordability."}
+            </p>
+          </div>
+        </section>
+
+        <section className={`${cardClass} p-6`}>
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-fuchsia-300/15">
-              <Bell className="text-fuchsia-100" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-300/15">
+              <BarChart3 className="text-pink-100" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black">6-month savings projection</h2>
+              <p className="mt-1 text-sm text-pink-50/60">
+                A simple forecast using your current saved amount and monthly target.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 flex h-48 items-end gap-3 rounded-3xl border border-pink-200/15 bg-white/[0.06] p-4">
+            {monthlyProjection.map((item) => (
+              <div key={item.month} className="flex flex-1 flex-col items-center gap-2">
+                <div className="text-[10px] font-bold text-pink-50/55">
+                  {formatGBP(item.amount)}
+                </div>
+                <div
+                  className="w-full rounded-t-2xl bg-gradient-to-t from-rose-400 via-pink-300 to-fuchsia-200 shadow-[0_0_24px_rgba(244,114,182,0.35)] transition-all duration-500"
+                  style={{ height: `${Math.max((item.amount / maxProjection) * 100, 8)}%` }}
+                />
+                <div className="text-xs font-black text-pink-50/65">{item.month}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className={`${cardClass} p-6`}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-300/15">
+              <Bell className="text-pink-100" />
             </div>
             <div>
               <h2 className="text-xl font-black">Push Notifications</h2>
@@ -1022,20 +1154,12 @@ export default function HomePage() {
 
             <button
               onClick={sendMotivation}
-              className="rounded-2xl border border-fuchsia-200/25 bg-pink-200/10 px-5 py-3 text-sm font-bold text-pink-50 transition-all duration-300 hover:scale-[1.03] hover:bg-pink-200/15"
+              className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-5 py-2.5 text-sm font-bold text-pink-50 transition-all duration-300 hover:scale-[1.03] hover:bg-pink-200/15"
             >
               Send motivation
             </button>
           </div>
         </section>
-
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 03</p>
-            <h2 className="mt-2 text-2xl font-black md:text-3xl">Savings & contributions</h2>
-          </div>
-          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
-        </div>
 
         <section id="savings" className={`${cardClass} p-6`}>
           <h2 className="text-xl font-black">Add Savings Contribution</h2>
@@ -1079,15 +1203,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 04</p>
-            <h2 className="mt-2 text-2xl font-black md:text-3xl">Pots & property adding</h2>
-          </div>
-          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
-        </div>
-
-        <section id="pots" className="grid gap-6 lg:grid-cols-2">
+        <section className="grid gap-6 lg:grid-cols-2">
           <div className={`${cardClass} p-6`}>
             <h2 className="text-xl font-black">Savings Pots</h2>
             <div className="mt-5 space-y-4">
@@ -1100,7 +1216,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={goal.name}
-                    className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.07] p-4"
+                    className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-4"
                   >
                     <div className="mb-3 flex items-center justify-between gap-4">
                       <div>
@@ -1110,7 +1226,7 @@ export default function HomePage() {
                           {formatGBP(Number(goal.target))}
                         </p>
                       </div>
-                      <p className="font-black text-fuchsia-100">{goalProgress}%</p>
+                      <p className="font-black text-pink-100">{goalProgress}%</p>
                     </div>
 
                     <ProgressBar value={goalProgress} />
@@ -1143,7 +1259,7 @@ export default function HomePage() {
           </div>
 
           <div className={`${cardClass} p-6`}>
-            <h2 className="text-xl font-black">Add Property Listing</h2>
+            <h2 className="text-xl font-black">Add Property</h2>
             <div className="mt-4 grid gap-3">
               <input
                 value={propertyTitle}
@@ -1194,19 +1310,11 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 05</p>
-            <h2 className="mt-2 text-2xl font-black md:text-3xl">Property watchlist</h2>
-          </div>
-          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
-        </div>
-
         <section id="properties" className={`${cardClass} p-6`}>
-          <h2 className="text-xl font-black">Cornwall Love Nest Watchlist</h2>
+          <h2 className="text-xl font-black">Cornwall Property Watchlist</h2>
           <div className="mt-5 grid gap-5 lg:grid-cols-2">
             {properties.length === 0 && (
-              <div className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.07] p-5 text-sm text-pink-50/60 lg:col-span-2">
+              <div className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-5 text-sm text-pink-50/60 lg:col-span-2">
                 No properties added yet. Add properties you and Dannie are interested in.
               </div>
             )}
@@ -1214,7 +1322,7 @@ export default function HomePage() {
             {properties.map((property) => (
               <div
                 key={property.id || `${property.title}-${property.location}`}
-                className="overflow-hidden rounded-[2rem] border border-fuchsia-200/20 bg-white/[0.08] shadow-xl shadow-rose-950/25 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12] hover:shadow-2xl"
+                className="overflow-hidden rounded-[2rem] border border-pink-200/15 bg-white/[0.08] shadow-xl shadow-rose-950/25 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12] hover:shadow-2xl"
               >
                 {property.image_url ? (
                   <img
@@ -1234,13 +1342,18 @@ export default function HomePage() {
                       <h3 className="text-lg font-black">{property.title}</h3>
                       <p className="text-sm text-pink-50/55">{property.location}</p>
                     </div>
-                    <span
-                      className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(
-                        property.status
-                      )}`}
-                    >
-                      {property.status}
-                    </span>
+                    <div className="flex flex-col items-end gap-2">
+                      <span
+                        className={`rounded-full border px-3 py-1 text-xs font-black ${statusClass(
+                          property.status
+                        )}`}
+                      >
+                        {property.status}
+                      </span>
+                      <span className="rounded-full border border-fuchsia-200/25 bg-fuchsia-200/10 px-3 py-1 text-xs font-black text-fuchsia-50">
+                        Score {getPropertyScore(property)}/100
+                      </span>
+                    </div>
                   </div>
 
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
@@ -1282,7 +1395,7 @@ export default function HomePage() {
                     <a
                       href={property.link}
                       target="_blank"
-                      className="mt-4 inline-flex items-center gap-2 text-sm font-black text-fuchsia-100 hover:text-white"
+                      className="mt-4 inline-flex items-center gap-2 text-sm font-black text-pink-100 hover:text-white"
                     >
                       <LinkIcon size={16} /> Open listing
                     </a>
@@ -1293,14 +1406,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-fuchsia-100/60">Section 06</p>
-            <h2 className="mt-2 text-2xl font-black md:text-3xl">Furniture & appliances</h2>
-          </div>
-          <div className="hidden h-px flex-1 bg-gradient-to-r from-fuchsia-200/40 to-transparent sm:block" />
-        </div>
-
         <section id="planner" className={`${cardClass} p-6`}>
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
@@ -1309,7 +1414,7 @@ export default function HomePage() {
                 Add everything you need for the move and track estimated costs.
               </p>
             </div>
-            <div className="rounded-2xl border border-fuchsia-200/25 bg-pink-200/10 px-4 py-3 text-sm font-black text-pink-50">
+            <div className="rounded-2xl border border-pink-200/20 bg-pink-200/10 px-4 py-3 text-sm font-black text-pink-50">
               Total estimate:{" "}
               {formatGBP(
                 plannerItems.reduce(
@@ -1368,7 +1473,7 @@ export default function HomePage() {
 
           <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {plannerItems.length === 0 && (
-              <div className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.07] p-5 text-sm text-pink-50/60 md:col-span-2 lg:col-span-4">
+              <div className="rounded-3xl border border-pink-200/15 bg-white/[0.07] p-5 text-sm text-pink-50/60 md:col-span-2 lg:col-span-4">
                 No furniture or appliance items added yet.
               </div>
             )}
@@ -1380,10 +1485,10 @@ export default function HomePage() {
               return (
                 <div
                   key={plannerItem.id}
-                  className="rounded-3xl border border-fuchsia-200/20 bg-white/[0.08] p-4 shadow-xl shadow-rose-950/20 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12]"
+                  className="rounded-3xl border border-pink-200/15 bg-white/[0.08] p-4 shadow-xl shadow-rose-950/20 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12]"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-300/15">
-                    <Icon className="text-fuchsia-100" />
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-pink-300/15">
+                    <Icon className="text-pink-100" />
                   </div>
                   <h3 className="mt-3 font-black">{plannerItem.item}</h3>
                   <p className="text-sm text-pink-50/55">{plannerItem.category}</p>
@@ -1407,7 +1512,50 @@ export default function HomePage() {
           </div>
         </section>
 
-        <nav className="fixed inset-x-4 bottom-4 z-40 rounded-[1.6rem] border border-fuchsia-200/25 bg-rose-950/80 p-2 shadow-2xl shadow-rose-950/60 backdrop-blur-2xl md:hidden">
+
+        <section id="achievements" className={`${cardClass} p-6`}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-300/15">
+              <Trophy className="text-yellow-100" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black">Couple achievements</h2>
+              <p className="mt-1 text-sm text-pink-50/60">
+                Little milestones that make the whole journey feel more exciting.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {achievements.map((achievement) => {
+              const AchievementIcon = achievement.icon;
+
+              return (
+                <div
+                  key={achievement.title}
+                  className={`rounded-3xl border p-4 transition-all duration-300 ${
+                    achievement.unlocked
+                      ? "border-yellow-200/35 bg-yellow-200/12 shadow-[0_0_28px_rgba(253,224,71,0.18)]"
+                      : "border-pink-200/15 bg-white/[0.06] opacity-60"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/[0.10]">
+                      <AchievementIcon className={achievement.unlocked ? "text-yellow-100" : "text-pink-50/50"} />
+                    </div>
+                    <span className="rounded-full bg-white/[0.10] px-3 py-1 text-xs font-black text-pink-50/70">
+                      {achievement.unlocked ? "Unlocked" : "Locked"}
+                    </span>
+                  </div>
+                  <h3 className="mt-4 font-black">{achievement.title}</h3>
+                  <p className="mt-1 text-sm text-pink-50/60">{achievement.detail}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <nav className="fixed inset-x-4 bottom-4 z-40 rounded-[1.6rem] border border-pink-200/20 bg-rose-950/80 p-2 shadow-2xl shadow-rose-950/60 backdrop-blur-2xl md:hidden">
           <div className="grid grid-cols-5 gap-1">
             <a
               href="#overview"
